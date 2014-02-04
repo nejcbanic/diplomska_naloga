@@ -3,30 +3,35 @@
  * and open the template in the editor.
  */
 package org.myorg.TestWindow;
-     
+ 
+import net.java.games.input.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
-import org.netbeans.api.editor.mimelookup.MimeLookup;
+import javax.tools.JavaCompiler;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.netbeans.editor.BaseDocument;
 import org.openide.awt.ActionID;
@@ -35,7 +40,6 @@ import org.openide.text.CloneableEditorSupport;
 import org.openide.text.NbDocument;
 import org.openide.util.NbBundle.Messages;
 import org.netbeans.editor.Utilities;
-import org.netbeans.modules.editor.NbEditorKit;
 import org.openide.util.Exceptions;
 import org.openide.windows.TopComponent;
 
@@ -64,14 +68,41 @@ import org.openide.windows.TopComponent;
 })
 
 public final class TestWindowTopComponent extends TopComponent {
-
-    JEditorPane jEditorPane2 = null;
-    public TestWindowTopComponent() throws IOException {      
+    
+ private JEditorPane jEditorPane2 = null;
+ private ReservedWords r;
+ private List<JLabel> f;
+ 
+ public TestWindowTopComponent() throws IOException{
+             r = new ReservedWords("java");
+             f = r.retList();
+             initComponents();
+             initEditor();
+             initMyComp();
+ }
+    
+ public static String runCode(String s) throws Exception{
+        JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
+        StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null);
+        File jf = new File("test.java"); //create file in current working directory
+        PrintWriter pw = new PrintWriter(jf);
+        pw.println("public class test {public static void main(){"+s+"}}");
         
-        initComponents();     
+        Iterable fO = sjfm.getJavaFileObjects(jf);
+        if(!jc.getTask(null,sjfm,null,null,null,fO).call()) { //compile the code
+            throw new Exception("compilation failed");
+        }
+        URL[] urls = new URL[]{org.openide.util.Utilities.toURI(new File("")).toURL()}; //use current working directory
+        URLClassLoader ucl = new URLClassLoader(urls);
+        Object o= ucl.loadClass("test").newInstance();
+        return (String) o.getClass().getMethod("main").invoke(o);
+
+    }
+    public void initEditor(){
+        
+                    
         jEditorPane2 = new JEditorPane();
-        ReservedWords r = new ReservedWords("java");
-        List<JLabel> f = r.retList();
+        
     
         jEditorPane2.setContentType("text/x-java");
         EditorKit kit = CloneableEditorSupport.getEditorKit("text/x-java");
@@ -86,6 +117,9 @@ public final class TestWindowTopComponent extends TopComponent {
         } else {
             editorWindow.add(new JScrollPane(jEditorPane2), BorderLayout.CENTER);
         }
+    }
+    public  void initMyComp() throws IOException { 
+
         MouseListener ml;
         ml = new MouseAdapter(){
             @Override
@@ -115,6 +149,8 @@ public final class TestWindowTopComponent extends TopComponent {
                     update(arg0);
                 } catch (BadLocationException ex) {
                     Exceptions.printStackTrace(ex);
+                } catch (Exception ex) {
+                    Exceptions.printStackTrace(ex);
                 }
  
             }
@@ -124,23 +160,40 @@ public final class TestWindowTopComponent extends TopComponent {
             {
 
             }
-            public void update(DocumentEvent e) throws BadLocationException{
+            public void update(DocumentEvent e) throws BadLocationException, Exception{
                 Document doc = e.getDocument();
-                String output  =doc.getText(0, doc.getLength());
-                System.out.println(output);
+                String output  = doc.getText(0, doc.getLength());
+                if (output.endsWith(".")){
+                    String sub = "";
+                    if(output.length() >= 2){
+                        for (int i = output.length()-2; i>=0 ; i--){
+//                            sub = sub+output.charAt(i);
+//                            System.out.println(output.charAt(i));
+//                            if(output.charAt(i) == ' '  || output.charAt(i) == '.'){
+//                                sub+=".class.getObject()";
+//                                String test = runCode("System.out.println("+sub+");");
+//                                Class c = Class.forName(test);
+//                                            Method m[] = c.getDeclaredMethods();
+//                            for (int j = 0; j < m.length; j++)
+//                             System.out.println(m[j].getName()+ " "+m[j].getReturnType()); 
 
+                            }
+                        }
+                    }
             }
         });
-        for(JLabel exp:f){
-           JLabel test = exp;
-           test.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-           test.setHorizontalAlignment(SwingConstants.CENTER);
-           test.setBorder(new LineBorder(Color.GRAY, 1, true));
-           test.setFont(new Font("Monospaced", Font.PLAIN, 13));
-           test.setForeground(Color.blue);
-           rwPane.add(test);
-           test.addMouseListener(ml);
-        }
+        
+
+         for(JLabel exp:f){
+                   JLabel test = exp;
+                   test.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                   test.setHorizontalAlignment(SwingConstants.CENTER);
+                   test.setBorder(new LineBorder(Color.GRAY, 1, true));
+                   test.setFont(new Font("Monospaced", Font.PLAIN, 13));
+                   test.setForeground(Color.blue);
+                   rwPane.add(test);
+                   test.addMouseListener(ml);
+                }
         
         
    }
