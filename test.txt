@@ -1,0 +1,10 @@
+Modifiers;abstract  final  native  private  protected  public  
+static   transient  synchronized  volatile  strictfp;
+Access control;private  protected  public;
+Data types;boolean byte  char  int  long  short  float  double enum;
+Try-catch;try  catch  finally  throw;
+Decision makers;break  case  continue  default  do  while  for  
+switch  if  else;
+Class functions;class  extends  implements  import  instanceof  
+new  package  return  interface  
+this  throws  void    super;

@@ -9,7 +9,8 @@ package org.myorg.TestWindow;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import javax.swing.JLabel;
 
@@ -23,23 +24,33 @@ class ReservedWords{
     public ReservedWords(String contentName){
         this.contentName = contentName;
     }
-    public List<JLabel> retList(){
+    public Map<String, ArrayList<JLabel>> retList(){
            // Location of file to read
         File file = new File(contentName+".txt");
-        List<JLabel> myList = new ArrayList<JLabel>();
+
+        Map<String, ArrayList<JLabel>> dict = new HashMap<String, ArrayList<JLabel>>();
        
         try {
  
-            Scanner scanner = new Scanner(file);
- 
+            Scanner scanner = new Scanner(file).useDelimiter(";");
             while (scanner.hasNext()) {
-                String line = scanner.next();
-                myList.add(new JLabel(line));
+                String line = scanner.next().replace("\r\n", " ").replace("\n", " ");
+                String resWords = scanner.next().replace("\r\n", " ").replace("\n", " ");
+                String test[]= resWords.split(" ");
+                ArrayList<JLabel> test2 = new ArrayList<JLabel>();
+                for(String t:test){                   
+                    if (!"".equals(t)){
+                       test2.add(new JLabel(t));
+                      
+                    }
+                }
+                dict.put(line, test2);
+
             }
             scanner.close();
         } catch (FileNotFoundException e) {
         }
-        return myList;
+        return dict;
         
     }
     
