@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<rss version="2.0">
+   <channel>
+      
+      <title>NetBeans Screencasts and Video Demos</title>
+      <link>https://netbeans.org/index.html</link>
+      <description>Screencasts that show you all the cool features of NetBeans, the free and open-source IDE for Java development and scripting.</description>
+      <language>en</language>
+      <webMaster>webmaster@netbeans.org (NetBeans webmaster)</webMaster>
+      <image>
+         <title>NetBeans Screencasts and Video Demos</title>
+         <url>https://netbeans.org/images_www/v5/nb-logo.gif</url>
+         <link>https://netbeans.org/index.html</link>
+         <width>110</width>
+         <height>30</height>
+      </image>
+      <item>
+         <pubDate>Wed, 29 January 2014 12:00:00 +0200</pubDate>
+         <title>Getting Started with Cordova in NetBeans IDE</title>
+         <link>https://netbeans.org/kb/docs/web/html5-cordova-screencast.html</link>
+         <guid>https://netbeans.org/kb/docs/web/html5-cordova-screencast.html</guid>
+         <description>This screencast demonstrates how to create applications that use HTML, JavaScript, and CSS, and then deploy them as native Android or iOS applications via Cordova.</description>
+         <enclosure url="https://netbeans.org/images_www/articles/74/screencast-thumbs/html5-cordova.png" type="image/png" width="100" height="100" length="35253" />
+      </item>
+      
+      <item>
+         <pubDate>Wed, 15 January 2014 12:00:00 +0200</pubDate>
+         <title>JDK 8 Support in NetBeans IDE</title>
+         <link>https://netbeans.org/kb/docs/java/jdk8-nb74-screencast.html</link>
+         <guid>https://netbeans.org/kb/docs/java/jdk8-nb74-screencast.html</guid>
+         <description>This screencast demonstrates how to set up NetBeans IDE 7.4 to use JDK 8, together with how to use JDK 8 profile support and lambda expressions.</description>
+         <enclosure url="https://netbeans.org/images_www/demos/general.png" type="image/png" width="100" height="107" length="35253" />
+      </item>
+   </channel>
+</rss>
+
+

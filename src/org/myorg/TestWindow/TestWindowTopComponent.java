@@ -13,25 +13,15 @@ import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
-import static javax.swing.JComponent.TOOL_TIP_TEXT_KEY;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,9 +34,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
-import javax.tools.JavaCompiler;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.netbeans.editor.BaseDocument;
 import org.openide.awt.ActionID;
@@ -97,24 +84,7 @@ public final class TestWindowTopComponent extends TopComponent {
              initEditor();
              initMyComp();
  }
-    
- public static String runCode(String s) throws Exception{
-        JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
-        StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null);
-        File jf = new File("test.java"); //create file in current working directory
-        PrintWriter pw = new PrintWriter(jf);
-        pw.println("public class test {public static void main(){"+s+"}}");
-        
-        Iterable fO = sjfm.getJavaFileObjects(jf);
-        if(!jc.getTask(null,sjfm,null,null,null,fO).call()) { //compile the code
-            throw new Exception("compilation failed");
-        }
-        URL[] urls = new URL[]{org.openide.util.Utilities.toURI(new File("")).toURL()}; //use current working directory
-        URLClassLoader ucl = new URLClassLoader(urls);
-        Object o= ucl.loadClass("test").newInstance();
-        return (String) o.getClass().getMethod("main").invoke(o);
 
-    }
     public final void initEditor(){
         
                     

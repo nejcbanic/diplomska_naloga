@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN"
+                            "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Menu">
+        <folder name="Window">
+            <file name="org-myorg-TestWindow-TestWindowTopComponent.shadow">
+                <!--org.myorg.TestWindow.TestWindowTopComponent-->
+                <attr name="originalFile" stringvalue="Actions/Window/org-myorg-TestWindow-TestWindowTopComponent.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Editors">
+        <folder name="text">
+            <folder name="html">
+                <folder name="CompletionProviders">
+                    <file name="org-myorg-TestWindow-DemoCompletionProvider.instance">
+                        <!--org.myorg.TestWindow.DemoCompletionProvider-->
+                        <attr name="instanceOf" stringvalue="org.netbeans.spi.editor.completion.CompletionProvider"/>
+                    </file>
+                </folder>
+            </folder>
+            <folder name="x-java">
+                <folder name="CompletionProviders">
+                    <file name="org-myorg-TestWindow-DemoCompletionProvider.instance">
+                        <!--org.myorg.TestWindow.DemoCompletionProvider-->
+                        <attr name="instanceOf" stringvalue="org.netbeans.spi.editor.completion.CompletionProvider"/>
+                    </file>
+                </folder>
+            </folder>
+        </folder>
+    </folder>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="TestWindowTopComponent.settings">
+                <!--org.myorg.TestWindow.TestWindowTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE settings PUBLIC "-//NetBeans//DTD Session settings 1.0//EN" "http://www.netbeans.org/dtds/sessionsettings-1_0.dtd">
+<settings version="1.0">
+  <instance class="org.myorg.TestWindow.TestWindowTopComponent"/>
+</settings>
+]]></file>
+        </folder>
+        <folder name="Modes">
+            <folder name="editor">
+                <file name="TestWindowTopComponent.wstcref">
+                    <!--org.myorg.TestWindow.TestWindowTopComponent--><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tc-ref PUBLIC "-//NetBeans//DTD Top Component in Mode Properties 2.0//EN" "http://www.netbeans.org/dtds/tc-ref2_0.dtd">
+<tc-ref version="2.0">
+  <tc-id id="TestWindowTopComponent"/>
+  <state opened="true"/>
+</tc-ref>
+]]></file>
+            </folder>
+        </folder>
+    </folder>
+    <folder name="Actions">
+        <folder name="Window">
+            <file name="org-myorg-TestWindow-TestWindowTopComponent.instance">
+                <!--org.myorg.TestWindow.TestWindowTopComponent-->
+                <attr
+                    methodvalue="org.openide.windows.TopComponent.openAction" name="instanceCreate"/>
+                <attr name="component" newvalue="org.myorg.TestWindow.TestWindowTopComponent"/>
+                <attr name="preferredID" stringvalue="TestWindowTopComponent"/>
+                <attr
+                    bundlevalue="org.myorg.TestWindow.Bundle#CTL_TestWindowAction" name="displayName"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="xml">
+        <folder name="entities">
+            <folder name="org_myorg_TestWindow">
+                <file name="TestWindow" url="nbres:/org/netbeans/modules/settings/resources/properties-1_0.dtd">
+                    <!--org.myorg.TestWindow.TestWindowTopComponent-->
+                    <attr name="hint.originalPublicID" stringvalue="-//org.myorg.TestWindow//TestWindow//EN"/>
+                </file>
+            </folder>
+        </folder>
+        <folder name="memory">
+            <folder name="org">
+                <folder name="myorg">
+                    <folder name="TestWindow">
+                        <file name="TestWindowTopComponent">
+                            <!--org.myorg.TestWindow.TestWindowTopComponent-->
+                            <attr name="settings.providerPath" stringvalue="xml/lookups//org_myorg_TestWindow/TestWindow.instance"/>
+                        </file>
+                    </folder>
+                </folder>
+            </folder>
+        </folder>
+        <folder name="lookups">
+            <folder name="org_myorg_TestWindow">
+                <file name="TestWindow.instance">
+                    <!--org.myorg.TestWindow.TestWindowTopComponent-->
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.create" name="instanceCreate"/>
+                    <attr
+                        methodvalue="org.netbeans.api.settings.Factory.properties" name="settings.convertor"/>
+                    <attr name="settings.instanceClass" stringvalue="org.myorg.TestWindow.TestWindowTopComponent"/>
+                    <attr name="settings.instanceOf" stringvalue="org.myorg.TestWindow.TestWindowTopComponent"/>
+                    <attr boolvalue="true" name="xmlproperties.preventStoring"/>
+                </file>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>
