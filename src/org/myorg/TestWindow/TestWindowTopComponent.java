@@ -18,9 +18,17 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
@@ -75,11 +83,28 @@ public final class TestWindowTopComponent extends TopComponent {
  private final ReservedWords r;
  private final  Map<String, ArrayList<JLabel>>  f;
  private ArrayList<Controller> newsticks;
-
+  protected   Set<File> content  = new HashSet<File>();
+  protected   Map<String, ArrayList<String>> classFinal = new HashMap<String, ArrayList<String>>();
  private Component[] components;
+
+
  public TestWindowTopComponent() throws IOException{
-             r = new ReservedWords("test");
-             f = r.retList();
+            r = new ReservedWords("test");
+            f = r.retList();
+            String loc = System.getProperty("sun.boot.class.path");
+
+            for (String path:loc.split(";")){
+                 File test = new File(path);
+                 if (test.isDirectory() && test.exists())
+                     recursiveSearch(path);
+                 else
+                     content.add(test);         
+            }
+            for (File file: content) {
+              if (file.getPath().endsWith(".jar") && file.exists()){
+                  getJarContent(file.getPath().toString());
+              }
+            }
              initComponents();
              initEditor();
              initMyComp();
@@ -157,21 +182,28 @@ public final class TestWindowTopComponent extends TopComponent {
                 Document doc = e.getDocument();
                 String output  = doc.getText(0, doc.getLength());
                 if (output.endsWith(".")){
-                    String sub = "";
-                    if(output.length() >= 2){
-                        for (int i = output.length()-2; i>=0 ; i--){
-//                            sub = sub+output.charAt(i);
-//                            System.out.println(output.charAt(i));
-//                            if(output.charAt(i) == ' '  || output.charAt(i) == '.'){
-//                                sub+=".class.getObject()";
-//                                String test = runCode("System.out.println("+sub+");");
-//                                Class c = Class.forName(test);
-//                                            Method m[] = c.getDeclaredMethods();
-//                            for (int j = 0; j < m.length; j++)
-//                             System.out.println(m[j].getName()+ " "+m[j].getReturnType()); 
+                   try{
+                       
+                        output = output.substring(output.lastIndexOf("\n")+1);
+                        output = output.substring(output.lastIndexOf(" ")+1);
+                        String test = output.split("\\.")[0];
 
+                        ArrayList temp = classFinal.get(test);
+                        if (temp!= null){
+                            Class newClass = Class.forName(temp.get(0).toString());
+
+                            Method[] methods = newClass.getMethods();
+
+                            for (Method method:methods)
+                            {
+                                System.out.println(method.getName());
                             }
+                            
                         }
+
+                   }catch( ArrayIndexOutOfBoundsException exp ){
+                       
+                   }
                     }
             }
         });
@@ -451,6 +483,47 @@ public final class TestWindowTopComponent extends TopComponent {
     } catch (AWTException e) {
     }
 }
+   
+     public void recursiveSearch(String dirName){
+        File dir = new File(dirName);
+        File[] fileList =  dir.listFiles();        
+        for (File file : fileList){
+            if (file.isFile()){
+               content.add(file);
+            } else if (file.isDirectory()){
+                recursiveSearch(file.getAbsolutePath());
+            }
+        }
+    }
+  public  void getJarContent(String jarPath) throws IOException{
+
+    JarFile jar = new JarFile(jarPath);
+    String entry;
+    String []splittedString;
+    ArrayList arrayString;
+    
+    try {
+       for (Enumeration<JarEntry> list = jar.entries(); list.hasMoreElements(); ) {        
+          entry  = list.nextElement().getName();        
+          if (entry.endsWith(".class")){                    
+                  splittedString= entry.replace("/",".").split("\\.");
+                  arrayString  = classFinal.get(splittedString[splittedString.length-2]);
+                  if (arrayString == null){
+                      arrayString = new ArrayList<String>();
+                      arrayString.add(entry.replace("/",".").replace(".class", ""));
+                      classFinal.put(splittedString[splittedString.length-2], arrayString);
+                  }else{
+                      arrayString.add(entry.replace("/",".").replace(".class", ""));
+                      classFinal.put(splittedString[splittedString.length-2], arrayString);
+                  }
+          }
+       }
+    }
+    finally {
+       jar.close();
+    }
+
+  }
  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel calibrationPane;
