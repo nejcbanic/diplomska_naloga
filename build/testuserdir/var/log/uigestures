@@ -1,70 +1,200 @@
 <record>
-  <date>2014-03-07T00:07:30</date>
-  <millis>1394147250769</millis>
-  <sequence>113</sequence>
+  <date>2014-03-23T11:26:31</date>
+  <millis>1395570391222</millis>
+  <sequence>91</sequence>
+  <level>FINEST</level>
+  <thread>14</thread>
+  <message>SCREEN SIZE</message>
+  <param>1366</param>
+  <param>768</param>
+  <param>2</param>
+</record>
+<record>
+  <date>2014-03-23T11:26:31</date>
+  <millis>1395570391223</millis>
+  <sequence>92</sequence>
+  <level>CONFIG</level>
+  <thread>14</thread>
+  <message>IDE_STARTUP</message>
+</record>
+<record>
+  <date>2014-03-23T11:26:32</date>
+  <millis>1395570392732</millis>
+  <sequence>102</sequence>
+  <logger>org.netbeans.ui.metrics.laf</logger>
+  <level>INFO</level>
+  <thread>14</thread>
+  <message>USG_LOOK_AND_FEEL</message>
+  <param>Windows</param>
+  <param>Windows</param>
+</record>
+<record>
+  <date>2014-03-23T11:26:39</date>
+  <millis>1395570399182</millis>
+  <sequence>125</sequence>
+  <level>INFO</level>
+  <thread>13</thread>
+  <message>MEMORY</message>
+  <key>MEMORY</key>
+  <catalog>&lt;null&gt;</catalog>
+  <param>4140347392</param>
+</record>
+<record>
+  <date>2014-03-23T11:26:45</date>
+  <millis>1395570405779</millis>
+  <sequence>127</sequence>
   <logger>org.netbeans.ui.actions.editor</logger>
   <level>FINE</level>
   <thread>20</thread>
   <message>UI_ACTION_EDITOR</message>
   <key>UI_ACTION_EDITOR</key>
   <catalog>&lt;null&gt;</catalog>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1394147250768,modifiers=] on javax.swing.JEditorPane[,0,0,265x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@6a982dc5,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@4ddecc7c,typeHandlers={}]</param>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1394147250768,modifiers=] on javax.swing.JEditorPane[,0,0,265x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@6a982dc5,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@4ddecc7c,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570405777,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570405777,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
   <param>org.netbeans.editor.BaseKit$InsertBreakAction[insert-break]</param>
-  <param>org.netbeans.editor.BaseKit$InsertBreakAction@6ce06a3b</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction@3216f7c3</param>
   <param>insert-break</param>
 </record>
 <record>
-  <date>2014-03-07T00:07:38</date>
-  <millis>1394147258679</millis>
-  <sequence>114</sequence>
-  <logger>org.netbeans.ui.focus</logger>
+  <date>2014-03-23T11:26:45</date>
+  <millis>1395570405955</millis>
+  <sequence>128</sequence>
+  <logger>org.netbeans.ui.actions.editor</logger>
   <level>FINE</level>
   <thread>20</thread>
-  <message>LOG_WINDOW_DEACTIVATED</message>
-  <key>LOG_WINDOW_DEACTIVATED</key>
-  <catalog>org.netbeans.core.ui.warmup.Bundle</catalog>
+  <message>UI_ACTION_EDITOR</message>
+  <key>UI_ACTION_EDITOR</key>
+  <catalog>&lt;null&gt;</catalog>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570405953,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570405953,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction[insert-break]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction@3216f7c3</param>
+  <param>insert-break</param>
 </record>
 <record>
-  <date>2014-03-07T00:07:53</date>
-  <millis>1394147273374</millis>
-  <sequence>115</sequence>
-  <logger>org.netbeans.ui.focus</logger>
+  <date>2014-03-23T11:26:46</date>
+  <millis>1395570406141</millis>
+  <sequence>129</sequence>
+  <logger>org.netbeans.ui.actions.editor</logger>
   <level>FINE</level>
-  <thread>40</thread>
-  <message>LOG_WINDOW_ACTIVATED</message>
-  <key>LOG_WINDOW_ACTIVATED</key>
-  <catalog>org.netbeans.core.ui.warmup.Bundle</catalog>
-  <param>6</param>
+  <thread>20</thread>
+  <message>UI_ACTION_EDITOR</message>
+  <key>UI_ACTION_EDITOR</key>
+  <catalog>&lt;null&gt;</catalog>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570406139,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570406139,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction[insert-break]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction@3216f7c3</param>
+  <param>insert-break</param>
 </record>
 <record>
-  <date>2014-03-07T00:07:54</date>
-  <millis>1394147274027</millis>
-  <sequence>116</sequence>
+  <date>2014-03-23T11:26:46</date>
+  <millis>1395570406332</millis>
+  <sequence>130</sequence>
+  <logger>org.netbeans.ui.actions.editor</logger>
+  <level>FINE</level>
+  <thread>20</thread>
+  <message>UI_ACTION_EDITOR</message>
+  <key>UI_ACTION_EDITOR</key>
+  <catalog>&lt;null&gt;</catalog>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570406331,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570406331,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction[insert-break]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction@3216f7c3</param>
+  <param>insert-break</param>
+</record>
+<record>
+  <date>2014-03-23T11:26:46</date>
+  <millis>1395570406540</millis>
+  <sequence>131</sequence>
+  <logger>org.netbeans.ui.actions.editor</logger>
+  <level>FINE</level>
+  <thread>20</thread>
+  <message>UI_ACTION_EDITOR</message>
+  <key>UI_ACTION_EDITOR</key>
+  <catalog>&lt;null&gt;</catalog>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570406538,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570406538,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction[insert-break]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction@3216f7c3</param>
+  <param>insert-break</param>
+</record>
+<record>
+  <date>2014-03-23T11:26:47</date>
+  <millis>1395570407046</millis>
+  <sequence>132</sequence>
+  <logger>org.netbeans.ui.actions.editor</logger>
+  <level>FINE</level>
+  <thread>20</thread>
+  <message>UI_ACTION_EDITOR</message>
+  <key>UI_ACTION_EDITOR</key>
+  <catalog>&lt;null&gt;</catalog>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570407045,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570407045,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction[insert-break]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction@3216f7c3</param>
+  <param>insert-break</param>
+</record>
+<record>
+  <date>2014-03-23T11:26:58</date>
+  <millis>1395570418471</millis>
+  <sequence>133</sequence>
+  <logger>org.netbeans.ui.actions.editor</logger>
+  <level>FINE</level>
+  <thread>20</thread>
+  <message>UI_ACTION_EDITOR</message>
+  <key>UI_ACTION_EDITOR</key>
+  <catalog>&lt;null&gt;</catalog>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570418470,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570418470,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction[insert-break]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction@3216f7c3</param>
+  <param>insert-break</param>
+</record>
+<record>
+  <date>2014-03-23T11:26:59</date>
+  <millis>1395570419168</millis>
+  <sequence>134</sequence>
+  <logger>org.netbeans.ui.actions.editor</logger>
+  <level>FINE</level>
+  <thread>20</thread>
+  <message>UI_ACTION_EDITOR</message>
+  <key>UI_ACTION_EDITOR</key>
+  <catalog>&lt;null&gt;</catalog>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570419167,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ENTER,when=1395570419167,modifiers=] on javax.swing.JEditorPane[,0,0,460x276,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@7f025697,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.plain.PlainKit@7aea8a58,typeHandlers={}]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction[insert-break]</param>
+  <param>org.netbeans.editor.BaseKit$InsertBreakAction@3216f7c3</param>
+  <param>insert-break</param>
+</record>
+<record>
+  <date>2014-03-23T11:27:24</date>
+  <millis>1395570444011</millis>
+  <sequence>136</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>40</thread>
+  <thread>47</thread>
   <message>INDEXING_STARTED</message>
   <key>INDEXING_STARTED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
   <param>0</param>
 </record>
 <record>
-  <date>2014-03-07T00:07:54</date>
-  <millis>1394147274033</millis>
-  <sequence>117</sequence>
+  <date>2014-03-23T11:27:24</date>
+  <millis>1395570444017</millis>
+  <sequence>137</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>40</thread>
+  <thread>47</thread>
   <message>INDEXING_FINISHED</message>
   <key>INDEXING_FINISHED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
   <param>3</param>
 </record>
 <record>
-  <date>2014-03-07T00:07:54</date>
-  <millis>1394147274038</millis>
-  <sequence>121</sequence>
+  <date>2014-03-23T11:27:24</date>
+  <millis>1395570444023</millis>
+  <sequence>141</sequence>
   <logger>org.netbeans.ui.focus</logger>
   <level>FINE</level>
   <thread>20</thread>

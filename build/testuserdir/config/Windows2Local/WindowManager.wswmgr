@@ -3,9 +3,9 @@
 <windowmanager version="2.1">
     <main-window>
   <joined-properties
-   x="2488"
-   y="191"
-   width="683"
+   x="1356"
+   y="19"
+   width="1074"
    height="738"
    relative-x="0.0"
    relative-y="0.0"
@@ -33,7 +33,7 @@
   </main-window>
     <editor-area state="joined" frame-state="0">
   <constraints>
-  <path orientation="horizontal" number="60" weight="0.7" />
+  <path orientation="horizontal" number="60" weight="0.8500522466039707" />
   <path orientation="vertical" number="40" weight="0.8757961783439491" />
   <path orientation="horizontal" number="40" weight="0.7" />
   <path orientation="vertical" number="40" weight="0.5" />
@@ -45,9 +45,9 @@
     <toolbar configuration="Standard" preferred-icon-size="24"/>
     <tc-list>
   <tc-id id="TestWindowTopComponent"/>
-  <tc-id id="NotificationCenterTopComponent"/>
   <tc-id id="services"/>
   <tc-id id="projectTab_tc"/>
+  <tc-id id="NotificationCenterTopComponent"/>
   <tc-id id="projectTabLogical_tc"/>
     </tc-list>
 </windowmanager>
