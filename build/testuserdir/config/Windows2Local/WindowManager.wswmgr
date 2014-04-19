@@ -3,10 +3,10 @@
 <windowmanager version="2.1">
     <main-window>
   <joined-properties
-   x="1803"
-   y="63"
-   width="1272"
-   height="1092"
+   x="2165"
+   y="75"
+   width="960"
+   height="955"
    relative-x="0.0"
    relative-y="0.0"
    relative-width="0.0"
@@ -15,7 +15,7 @@
    centered-vertically="false"
    maximize-if-width-below="0"
    maximize-if-height-below="0"
-   frame-state="6"
+   frame-state="0"
 />
   <separated-properties
    x="137"
@@ -45,8 +45,8 @@
     <toolbar configuration="Standard" preferred-icon-size="24"/>
     <tc-list>
   <tc-id id="TestWindowTopComponent"/>
+  <tc-id id="NotificationCenterTopComponent"/>
   <tc-id id="services"/>
-  <tc-id id="projectTab_tc"/>
   <tc-id id="projectTabLogical_tc"/>
     </tc-list>
 </windowmanager>

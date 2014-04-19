@@ -6,7 +6,7 @@
   <kind type="sliding" />
   <slidingSide side="left" />
   <state type="joined"  />
-  <bounds x="0" y="0" width="574" height="949" />
+  <bounds x="1" y="0" width="360" height="516" />
   <frame state="0"/>
     <empty-behavior permanent="true"/>
 </mode>

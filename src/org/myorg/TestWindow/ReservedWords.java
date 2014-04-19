@@ -50,8 +50,6 @@ class ReservedWords{
             scanner.close();
         } catch (FileNotFoundException e) {
         }
-        return dict;
-        
-    }
-    
+        return dict;       
+    }   
 }

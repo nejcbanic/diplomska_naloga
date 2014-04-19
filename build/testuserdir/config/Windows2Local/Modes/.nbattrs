@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE attributes PUBLIC "-//NetBeans//DTD DefaultAttributes 1.0//EN" "http://www.netbeans.org/dtds/attributes-1_0.dtd">
 <attributes version="1.0">
+    <fileobject name="bottomSlidingSide">
+        <attr name="WinSys-TCRef-Order" stringvalue="NotificationCenterTopComponent"/>
+    </fileobject>
     <fileobject name="commonpalette">
         <attr name="WinSys-TCRef-Order" stringvalue="CommonPalette"/>
     </fileobject>
@@ -8,16 +11,16 @@
         <attr name="WinSys-TCRef-Order" stringvalue="TestWindowTopComponent"/>
     </fileobject>
     <fileobject name="explorer">
-        <attr name="WinSys-TCRef-Order" stringvalue="favorites/DashboardTopComponent"/>
+        <attr name="WinSys-TCRef-Order" stringvalue="favorites/DashboardTopComponent/projectTab_tc"/>
     </fileobject>
     <fileobject name="leftSlidingSide">
-        <attr name="WinSys-TCRef-Order" stringvalue="projectTabLogical_tc/projectTab_tc/services"/>
+        <attr name="WinSys-TCRef-Order" stringvalue="projectTabLogical_tc/services"/>
     </fileobject>
     <fileobject name="navigator">
         <attr name="WinSys-TCRef-Order" stringvalue="navigatorTC"/>
     </fileobject>
     <fileobject name="output">
-        <attr name="WinSys-TCRef-Order" stringvalue="watchesView/NotificationCenterTopComponent/localsView/resultsView/callstackView/breakpointsView/sources/sessionsView/threadsView/bookmarks/versioning_output/search-results/gsf-testrunner-results/refactoring-preview/find-usages/TerminalContainerTopComponent/output/svnversioning/hgversioningTC/GitVersioning/GitRepositories/TaskListTopComponent/ReporterResultTopComponent"/>
+        <attr name="WinSys-TCRef-Order" stringvalue="watchesView/localsView/resultsView/callstackView/breakpointsView/sources/sessionsView/threadsView/bookmarks/versioning_output/search-results/gsf-testrunner-results/refactoring-preview/find-usages/TerminalContainerTopComponent/output/svnversioning/hgversioningTC/GitVersioning/GitRepositories/TaskListTopComponent/ReporterResultTopComponent"/>
     </fileobject>
     <fileobject name="properties">
         <attr name="WinSys-TCRef-Order" stringvalue="CssStylesTC/properties"/>

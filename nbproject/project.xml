@@ -148,7 +148,12 @@
                     </test-dependency>
                 </test-type>
             </test-dependencies>
-            <public-packages/>
+            <public-packages>
+                <package>net.java.games.input</package>
+                <package>net.java.games.util</package>
+                <package>net.java.games.util.plugins</package>
+                <package>org.myorg.TestWindow</package>
+            </public-packages>
             <class-path-extension>
                 <runtime-relative-path>ext/jinput.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/jinput.jar</binary-origin>

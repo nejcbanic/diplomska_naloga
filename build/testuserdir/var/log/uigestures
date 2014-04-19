@@ -1,6 +1,6 @@
 <record>
-  <date>2014-04-10T23:00:54</date>
-  <millis>1397163654961</millis>
+  <date>2014-04-18T00:04:45</date>
+  <millis>1397772285084</millis>
   <sequence>91</sequence>
   <level>FINEST</level>
   <thread>14</thread>
@@ -10,16 +10,16 @@
   <param>2</param>
 </record>
 <record>
-  <date>2014-04-10T23:00:54</date>
-  <millis>1397163654962</millis>
+  <date>2014-04-18T00:04:45</date>
+  <millis>1397772285085</millis>
   <sequence>92</sequence>
   <level>CONFIG</level>
   <thread>14</thread>
   <message>IDE_STARTUP</message>
 </record>
 <record>
-  <date>2014-04-10T23:00:56</date>
-  <millis>1397163656337</millis>
+  <date>2014-04-18T00:04:46</date>
+  <millis>1397772286448</millis>
   <sequence>102</sequence>
   <logger>org.netbeans.ui.metrics.laf</logger>
   <level>INFO</level>
@@ -29,32 +29,44 @@
   <param>Windows</param>
 </record>
 <record>
-  <date>2014-04-10T23:01:02</date>
-  <millis>1397163662098</millis>
-  <sequence>119</sequence>
+  <date>2014-04-18T00:04:52</date>
+  <millis>1397772292477</millis>
+  <sequence>118</sequence>
   <level>INFO</level>
-  <thread>29</thread>
+  <thread>28</thread>
   <message>MEMORY</message>
   <key>MEMORY</key>
   <catalog>&lt;null&gt;</catalog>
   <param>4140347392</param>
 </record>
 <record>
-  <date>2014-04-10T23:01:48</date>
-  <millis>1397163708369</millis>
-  <sequence>122</sequence>
+  <date>2014-04-18T00:05:14</date>
+  <millis>1397772314905</millis>
+  <sequence>121</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>21</thread>
+  <thread>13</thread>
   <message>INDEXING_STARTED</message>
   <key>INDEXING_STARTED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
   <param>0</param>
 </record>
 <record>
-  <date>2014-04-10T23:01:48</date>
-  <millis>1397163708381</millis>
-  <sequence>128</sequence>
+  <date>2014-04-18T00:05:14</date>
+  <millis>1397772314910</millis>
+  <sequence>122</sequence>
+  <logger>org.netbeans.ui.indexing</logger>
+  <level>INFO</level>
+  <thread>13</thread>
+  <message>INDEXING_FINISHED</message>
+  <key>INDEXING_FINISHED</key>
+  <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
+  <param>3</param>
+</record>
+<record>
+  <date>2014-04-18T00:05:14</date>
+  <millis>1397772314917</millis>
+  <sequence>126</sequence>
   <logger>org.netbeans.ui.focus</logger>
   <level>FINE</level>
   <thread>20</thread>
