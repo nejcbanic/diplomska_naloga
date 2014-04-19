@@ -1,75 +1,84 @@
 <record>
-  <date>2014-04-18T00:04:45</date>
-  <millis>1397772285084</millis>
-  <sequence>91</sequence>
+  <date>2014-04-19T09:56:06</date>
+  <millis>1397894166053</millis>
+  <sequence>37</sequence>
   <level>FINEST</level>
-  <thread>14</thread>
-  <message>SCREEN SIZE</message>
-  <param>1366</param>
-  <param>768</param>
-  <param>2</param>
+  <thread>15</thread>
+  <message>CPU INFO</message>
+  <param>4</param>
 </record>
 <record>
-  <date>2014-04-18T00:04:45</date>
-  <millis>1397772285085</millis>
-  <sequence>92</sequence>
+  <date>2014-04-19T09:56:06</date>
+  <millis>1397894166055</millis>
+  <sequence>38</sequence>
+  <level>FINEST</level>
+  <thread>15</thread>
+  <message>SCREEN SIZE</message>
+  <param>1920</param>
+  <param>1080</param>
+  <param>1</param>
+</record>
+<record>
+  <date>2014-04-19T09:56:06</date>
+  <millis>1397894166055</millis>
+  <sequence>39</sequence>
   <level>CONFIG</level>
-  <thread>14</thread>
+  <thread>15</thread>
   <message>IDE_STARTUP</message>
 </record>
 <record>
-  <date>2014-04-18T00:04:46</date>
-  <millis>1397772286448</millis>
-  <sequence>102</sequence>
+  <date>2014-04-19T09:56:06</date>
+  <millis>1397894166912</millis>
+  <sequence>49</sequence>
   <logger>org.netbeans.ui.metrics.laf</logger>
   <level>INFO</level>
-  <thread>14</thread>
+  <thread>15</thread>
   <message>USG_LOOK_AND_FEEL</message>
   <param>Windows</param>
   <param>Windows</param>
 </record>
 <record>
-  <date>2014-04-18T00:04:52</date>
-  <millis>1397772292477</millis>
-  <sequence>118</sequence>
+  <date>2014-04-19T09:56:10</date>
+  <millis>1397894170671</millis>
+  <sequence>52</sequence>
   <level>INFO</level>
-  <thread>28</thread>
+  <thread>42</thread>
   <message>MEMORY</message>
   <key>MEMORY</key>
   <catalog>&lt;null&gt;</catalog>
-  <param>4140347392</param>
+  <param>8240930816</param>
 </record>
 <record>
-  <date>2014-04-18T00:05:14</date>
-  <millis>1397772314905</millis>
-  <sequence>121</sequence>
+  <date>2014-04-19T09:56:22</date>
+  <millis>1397894182093</millis>
+  <sequence>63</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>13</thread>
+  <thread>56</thread>
   <message>INDEXING_STARTED</message>
   <key>INDEXING_STARTED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
   <param>0</param>
 </record>
 <record>
-  <date>2014-04-18T00:05:14</date>
-  <millis>1397772314910</millis>
-  <sequence>122</sequence>
+  <date>2014-04-19T09:56:22</date>
+  <millis>1397894182100</millis>
+  <sequence>64</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>13</thread>
+  <thread>56</thread>
   <message>INDEXING_FINISHED</message>
   <key>INDEXING_FINISHED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
-  <param>3</param>
+  <param>2</param>
 </record>
 <record>
-  <date>2014-04-18T00:05:14</date>
-  <millis>1397772314917</millis>
-  <sequence>126</sequence>
+  <date>2014-04-19T09:56:22</date>
+  <millis>1397894182115</millis>
+  <sequence>68</sequence>
   <logger>org.netbeans.ui.focus</logger>
   <level>FINE</level>
-  <thread>20</thread>
+  <thread>21</thread>
   <message>LOG_WINDOW_DEACTIVATED</message>
   <key>LOG_WINDOW_DEACTIVATED</key>
   <catalog>org.netbeans.core.ui.warmup.Bundle</catalog>
