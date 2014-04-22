@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><module codename="org.myorg.TestWindow">
-    <module_version install_time="1397894160771" last="true" origin="installer" specification_version="1.0">
+    <module_version install_time="1398185195713" last="true" origin="installer" specification_version="1.0">
         <file crc="227156445" name="config/Modules/org-myorg-TestWindow.xml"/>
         <file crc="2601033416" name="modules/ext/jinput.jar"/>
         <file crc="3750476644" name="modules/ext/org.eclipse.jdt.core.source_3.7.1.v_B76_R37x.jar"/>
-        <file crc="3233278082" name="modules/org-myorg-TestWindow.jar"/>
+        <file crc="3467454205" name="modules/org-myorg-TestWindow.jar"/>
     </module_version>
 </module>

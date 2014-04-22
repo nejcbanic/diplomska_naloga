@@ -11,7 +11,10 @@
         <attr name="WinSys-TCRef-Order" stringvalue="Welcome/TestWindowTopComponent/CoverageReportTopComponent/HQLEditorTopComponent/dbgInstances"/>
     </fileobject>
     <fileobject name="explorer">
-        <attr name="WinSys-TCRef-Order" stringvalue="projectTabLogical_tc/projectTab_tc/favorites/DashboardTopComponent/services/debuggingView/profiler_cp"/>
+        <attr name="WinSys-TCRef-Order" stringvalue="favorites/DashboardTopComponent/debuggingView/profiler_cp"/>
+    </fileobject>
+    <fileobject name="leftSlidingSide">
+        <attr name="WinSys-TCRef-Order" stringvalue="projectTabLogical_tc/projectTab_tc/services"/>
     </fileobject>
     <fileobject name="navigator">
         <attr name="WinSys-TCRef-Order" stringvalue="navigatorTC"/>

@@ -5,7 +5,6 @@
 package org.myorg.TestWindow;
  
 import java.awt.AWTException;
-import net.java.games.input.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -14,8 +13,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -24,8 +24,14 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,18 +44,18 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
@@ -57,15 +63,20 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
+import javax.swing.text.StyledDocument;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import net.java.games.input.*;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.netbeans.editor.BaseDocument;
+import org.netbeans.editor.Utilities;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.awt.UndoRedo;
 import org.openide.text.CloneableEditorSupport;
 import org.openide.text.NbDocument;
-import org.openide.util.NbBundle.Messages;
-import org.netbeans.editor.Utilities;
 import org.openide.util.Exceptions;
+import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
 /**
@@ -118,8 +129,12 @@ public final class TestWindowTopComponent extends TopComponent {
     private JPanel scrollS;
     private JPopupMenu popupPackage;
     private boolean leftButton = false;
+    private JTextPane outputWindow;
+
+    private UndoRedo.Manager manager = new UndoRedo.Manager();
+    private JButton run;
     
-    public TestWindowTopComponent() throws IOException{
+    public TestWindowTopComponent() throws IOException, BadLocationException{
             r = new ReservedWords("test");
             f = r.retList();
             
@@ -146,10 +161,11 @@ public final class TestWindowTopComponent extends TopComponent {
 
     public final void initEditor(){
         
-                    
+        outputWindow = new JTextPane();            
         jEditorPane2 = new JEditorPane();
-        
-    
+        run = new JButton("Run");
+        run.setBackground(Color.green);
+
         jEditorPane2.setContentType("text/x-java");
         EditorKit kit = CloneableEditorSupport.getEditorKit("text/x-java");
      
@@ -162,9 +178,16 @@ public final class TestWindowTopComponent extends TopComponent {
             NbDocument.CustomEditor ce = (NbDocument.CustomEditor) doc;
        
             editorWindow.add(ce.createEditor(jEditorPane2), BorderLayout.CENTER);
+          
         } else {
             editorWindow.add(new JScrollPane(jEditorPane2), BorderLayout.CENTER);
         }
+
+        toolbarEditorPane.add(Utilities.getEditorUI(jEditorPane2).getToolBarComponent(), BorderLayout.CENTER);
+        toolbarEditorPane.add(run);
+        jEditorPane2.getDocument().addUndoableEditListener(manager);
+        editorWindow.add(new JScrollPane(outputWindow), BorderLayout.CENTER);
+        jEditorPane2.setText("public class Test{\n\tpublic static void main(String[]args){\n\t\tSystem.out.println(\"Hello world\");\n\t}\n}");
     }
     
     private  void addToComboBox(String msg, JComboBox comboBox){
@@ -244,27 +267,88 @@ public final class TestWindowTopComponent extends TopComponent {
         return form;
     }
     private void reservedWords(){
-          for ( Map.Entry<String, ArrayList<JLabel>> entry : f.entrySet() ) {
-               String key = entry.getKey();
-               ArrayList<JLabel> value = entry.getValue();
-               JPanel form = new JPanel();
-               form.setLayout(new GridLayout(0,5));
-               TitledBorder title;
-               title = BorderFactory.createTitledBorder(key);
-               form.setBorder(title);
-                for (JLabel test: value) {
-                    test.setHorizontalAlignment(SwingConstants.CENTER);
-                    test.setFont(new Font("Monospaced", Font.PLAIN, 13));
-                    test.setForeground(Color.blue); 
-                    test.addMouseListener(ml);
-                    form.add(test);
-                }
-
-               rwPane.add(form);
-
+        f.entrySet().stream().map((entry) -> {
+            String key = entry.getKey();
+            ArrayList<JLabel> value = entry.getValue();
+            JPanel form = new JPanel();
+            form.setLayout(new GridLayout(0,5));
+            TitledBorder title;
+            title = BorderFactory.createTitledBorder(key);
+            form.setBorder(title);
+            for (JLabel test: value) {
+                test.setHorizontalAlignment(SwingConstants.CENTER);
+                test.setFont(new Font("Monospaced", Font.PLAIN, 13));
+                test.setForeground(Color.blue);
+                test.addMouseListener(ml);
+                form.add(test);
             }
+            return form;
+        }).forEach((form) -> {
+            rwPane.add(form);
+        });
     }
-    public  void initMyComp() throws IOException { 
+    public  void initMyComp() throws IOException, BadLocationException {
+        run.addActionListener((ActionEvent e) -> {
+            OutputStream out = new OutputStream() {
+                @Override
+                public void write( int b) throws IOException {
+                    updateTextPane(String.valueOf((char) b));
+                }
+                
+                private void updateTextPane( String string) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            Document doc = outputWindow.getDocument();
+                            try {
+                                doc.insertString(doc.getLength(), string, null);
+                            } catch (BadLocationException ex) {
+                                Exceptions.printStackTrace(ex);
+                            }
+                            outputWindow.setCaretPosition(doc.getLength() - 1);
+                        }
+                    });
+                }
+            };
+            
+            StyledDocument doc = outputWindow.getStyledDocument();
+            PrintWriter output = null;
+            try {
+                output = new PrintWriter(jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]+".java");
+            } catch (FileNotFoundException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            output.println(jEditorPane2.getText());
+            output.close();
+            String fileToCompile =jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]+".java";
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+            int compilationResult = compiler.run(null, null, out, fileToCompile);
+            
+            if(compilationResult == 0){
+                try {
+                    Process p = Runtime.getRuntime().exec("java "+jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]);
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(p.getInputStream()));
+                    String line = null;
+                    while ((line = in.readLine()) != null) {
+                        try {
+                            doc.insertString(doc.getLength(), line+"\n",null );
+                        } catch (BadLocationException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                    }
+                } catch (IOException ex) {                  
+                    ex.printStackTrace();
+                }
+            }else{
+                try {
+                    doc.insertString(doc.getLength(), "Compilation was not successful\n",null );
+                    
+                } catch (BadLocationException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            }
+        });
         
         ml = new MouseAdapter(){
             @Override
@@ -274,7 +358,10 @@ public final class TestWindowTopComponent extends TopComponent {
                     JLabel jc = (JLabel)e.getSource();
                      int caretPos = jEditorPane2.getCaretPosition();
                      try {
-                         jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
+                         if ("main".equals(jc.getText())){
+                             jEditorPane2.getDocument().insertString(caretPos, "public static void main (String[]args){\n}", null);
+                         }else
+                            jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
                      } catch(BadLocationException ex) {
                      }                
                 }else if(source instanceof JButton){
@@ -321,11 +408,7 @@ public final class TestWindowTopComponent extends TopComponent {
                 }
             }  
         }; 
-         jEditorPane2.addMouseListener(new MouseAdapter(){
-            public void mousePressed(MouseEvent Me){
 
-                }
-            });
         jEditorPane2.addKeyListener(new KeyListener() {
 
             @Override
@@ -653,8 +736,9 @@ public final class TestWindowTopComponent extends TopComponent {
         jButton1 = new javax.swing.JButton();
         favorites = new javax.swing.JPanel();
         search = new javax.swing.JPanel();
+        editorWindowPane = new javax.swing.JPanel();
+        toolbarEditorPane = new javax.swing.JPanel();
         editorWindow = new javax.swing.JPanel();
-        outputPane = new javax.swing.JPanel();
 
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
         setPreferredSize(new java.awt.Dimension(600, 300));
@@ -676,7 +760,7 @@ public final class TestWindowTopComponent extends TopComponent {
 
         calibrationPane.setLayout(new java.awt.GridLayout(0, 1));
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jPanel2.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, null, new java.awt.Color(0, 0, 153))); // NOI18N
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jPanel2.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 153))); // NOI18N
         jPanel2.setLayout(new java.awt.GridLayout(6, 2));
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -695,7 +779,6 @@ public final class TestWindowTopComponent extends TopComponent {
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jLabel1.text")); // NOI18N
         jPanel2.add(jLabel1);
 
-        reservedWordsCB.setSelectedIndex(-1);
         jPanel2.add(reservedWordsCB);
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jLabel2.text")); // NOI18N
@@ -789,17 +872,30 @@ public final class TestWindowTopComponent extends TopComponent {
         jInternalFrame1.getContentPane().add(jTabbedPane1);
         jTabbedPane1.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jTabbedPane1.AccessibleContext.accessibleName")); // NOI18N
 
-        editorWindow.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-        editorWindow.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        editorWindow.setLayout(new java.awt.GridLayout(0, 1));
+        editorWindowPane.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        editorWindowPane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        outputPane.setBackground(new java.awt.Color(255, 255, 255));
-        outputPane.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        outputPane.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        outputPane.setLayout(new java.awt.GridLayout(0, 1));
-        editorWindow.add(outputPane);
+        toolbarEditorPane.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        toolbarEditorPane.setLayout(new javax.swing.BoxLayout(toolbarEditorPane, javax.swing.BoxLayout.LINE_AXIS));
 
-        jInternalFrame1.getContentPane().add(editorWindow);
+        editorWindow.setLayout(new java.awt.GridLayout(2, 1));
+
+        javax.swing.GroupLayout editorWindowPaneLayout = new javax.swing.GroupLayout(editorWindowPane);
+        editorWindowPane.setLayout(editorWindowPaneLayout);
+        editorWindowPaneLayout.setHorizontalGroup(
+            editorWindowPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(toolbarEditorPane, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE)
+            .addComponent(editorWindow, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        editorWindowPaneLayout.setVerticalGroup(
+            editorWindowPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(editorWindowPaneLayout.createSequentialGroup()
+                .addComponent(toolbarEditorPane, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(editorWindow, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE))
+        );
+
+        jInternalFrame1.getContentPane().add(editorWindowPane);
 
         add(jInternalFrame1);
     }// </editor-fold>//GEN-END:initComponents
@@ -937,8 +1033,8 @@ public final class TestWindowTopComponent extends TopComponent {
     JarFile jar = new JarFile(jarPath);
     String entry;
     String []splittedString;
-    ArrayList arrayString;
-    ArrayList arrayClasses;
+    ArrayList<String> arrayString;
+    ArrayList<String> arrayClasses;
     try {
        for (Enumeration<JarEntry> list = jar.entries(); list.hasMoreElements(); ) {        
           entry  = list.nextElement().getName();        
@@ -979,7 +1075,8 @@ public final class TestWindowTopComponent extends TopComponent {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox ClassCB;
     private javax.swing.JPanel calibrationPane;
-    protected javax.swing.JPanel editorWindow;
+    private javax.swing.JPanel editorWindow;
+    protected javax.swing.JPanel editorWindowPane;
     private javax.swing.JPanel favorites;
     private javax.swing.JComboBox favoritesTabCB;
     private javax.swing.JButton jButton1;
@@ -996,11 +1093,11 @@ public final class TestWindowTopComponent extends TopComponent {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JPanel outputPane;
     private javax.swing.JComboBox reservedWordsCB;
     private javax.swing.JPanel rwPane;
     private javax.swing.JPanel search;
     private javax.swing.JComboBox searchTabCB;
+    private javax.swing.JPanel toolbarEditorPane;
     // End of variables declaration//GEN-END:variables
 
     @Override
