@@ -15,7 +15,6 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -30,17 +29,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.swing.BorderFactory;
@@ -55,8 +56,6 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -105,18 +104,19 @@ import org.openide.windows.TopComponent;
 
 public final class TestWindowTopComponent extends TopComponent {
 
-    private static  MouseListener ml;
+    private static  MouseListener mouseListener1;
+    private static  MouseListener mouseListener2;
     private JEditorPane jEditorPane2 = null;
     private final ReservedWords r;
     private final  Map<String, ArrayList<JLabel>>  f;
     private ArrayList<Controller> newsticks;
-    private   Set<File> content  = new HashSet<File>();
-    private   Map<String, ArrayList<String>> classFinal = new HashMap<String, ArrayList<String>>();
-    private  static Map<String, ArrayList<String>> packageFinal = new HashMap<String, ArrayList<String>>();
+    private final   Set<File> content  = new HashSet<>();
+    private final   Map<String, ArrayList<String>> classFinal = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private  Map<String, ArrayList<String>> packageFinal = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private static final  String[] classFavoritesInit = {"java.lang.String","java.lang.System","java.lang.Exception"
                                                ,"java.util.ArrayList","java.util.HashMap","java.lang.Object"
                                                ,"java.lang.Thread","java.lang.Class","java.util.Date","java.util.Iterator"};
-    private static ArrayList<String> classFavorites = new ArrayList<String>();
+    private static final ArrayList<String> classFavorites = new ArrayList<>();
     private Component[] components;
     private boolean period = false;
     private final String firstRow[] = {"1","2","3","4","5","6","7","8","9","0","-","+","Backspace"};//BackSpace
@@ -130,8 +130,8 @@ public final class TestWindowTopComponent extends TopComponent {
     private JPopupMenu popupPackage;
     private boolean leftButton = false;
     private JTextPane outputWindow;
-
-    private UndoRedo.Manager manager = new UndoRedo.Manager();
+    private String classFromSearch;
+    private final UndoRedo.Manager manager = new UndoRedo.Manager();
     private JButton run;
     
     public TestWindowTopComponent() throws IOException, BadLocationException{
@@ -149,7 +149,7 @@ public final class TestWindowTopComponent extends TopComponent {
             }
             for (File file: content) {
               if (file.getPath().endsWith(".jar") && file.exists()){
-                  getJarContent(file.getPath().toString());
+                  getJarContent(file.getPath());
               }
             }
 
@@ -171,7 +171,7 @@ public final class TestWindowTopComponent extends TopComponent {
      
         jEditorPane2.setEditorKit(kit);
         jEditorPane2.getDocument().putProperty("mimeType", "text/x-java");
-  
+       
         BaseDocument doc = Utilities.getDocument(jEditorPane2); 
   
         if (doc instanceof NbDocument.CustomEditor) { 
@@ -194,6 +194,28 @@ public final class TestWindowTopComponent extends TopComponent {
         comboBox.addItem(msg);
     }
     
+    private JPanel returnExceptions(){
+        
+       JPanel form = new JPanel();
+       form.setLayout(new GridLayout(0,3));
+       TitledBorder title;
+       title = BorderFactory.createTitledBorder("Exceptions");
+       form.setBorder(title);
+       ArrayList<String> exceptionList = packageFinal.get("java/lang");
+       exceptionList.addAll(packageFinal.get("java/io"));
+       Collections.sort(exceptionList);
+       for (String exp: exceptionList){
+            if (exp.contains("Exception") || exp.contains("Error") ){
+                JLabel methodLabel = new JLabel(exp);
+                methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
+                methodLabel.setForeground(Color.blue); 
+                methodLabel.addMouseListener(mouseListener1);
+                form.add(methodLabel);
+            }
+       }
+       return form;
+    }
     private JPanel returnPanelFavorites (){
         
        JPanel form = new JPanel();
@@ -204,13 +226,12 @@ public final class TestWindowTopComponent extends TopComponent {
        
        if (classFavorites.isEmpty())
            return null;
-       
        for (String classF: classFavorites){
             JLabel methodLabel = new JLabel(classF);
             methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
             methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
             methodLabel.setForeground(Color.blue); 
-            methodLabel.addMouseListener(ml);
+            methodLabel.addMouseListener(mouseListener1);
             form.add(methodLabel);
        }
        return form;
@@ -230,12 +251,14 @@ public final class TestWindowTopComponent extends TopComponent {
        
        for (Field field:fields)
        {
-            JLabel methodLabel = new JLabel(field.getName());
-            methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
-            methodLabel.setForeground(Color.blue); 
-            methodLabel.addMouseListener(ml);
-            form.add(methodLabel);
+           if(Modifier.isPublic(field.getModifiers()) || Modifier.isProtected(field.getModifiers()) ){
+                JLabel methodLabel = new JLabel(field.getName());
+                methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
+                methodLabel.setForeground(Color.blue); 
+                methodLabel.addMouseListener(mouseListener1);
+                form.add(methodLabel);
+           }
        }
         return form;       
         
@@ -244,29 +267,42 @@ public final class TestWindowTopComponent extends TopComponent {
     private JPanel returnPanelMethods(Class newClass){
         
        JPanel form = new JPanel();
-       form.setLayout(new GridLayout(0,5));
+       form.setLayout(new GridLayout(0,4));
        TitledBorder title;
        title = BorderFactory.createTitledBorder("Methods");
        form.setBorder(title); 
-       Method[] methods = newClass.getMethods();
+       Method[] methods = newClass.getDeclaredMethods();
        
        if (methods.length == 0)
            return null;
        
        for (Method method:methods)
        {
-         JLabel methodLabel = new JLabel(method.getName());
-         methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
-         methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
-         methodLabel.setForeground(Color.blue); 
-         methodLabel.addMouseListener(ml);
-         form.add(methodLabel);
+        if(Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers()) ){
+            Class parameters[] = method.getParameterTypes();
+            String fullName = method.getName();
+            if (parameters.length != 0){
+                fullName += " (";
+                for (Class parameter: parameters)
+                        fullName +=parameter.getSimpleName()+" ,";
+                fullName = fullName.substring(0, fullName.length() - 1) +")";
 
-
+            }
+            JLabel methodLabel = new JLabel(fullName);
+            methodLabel.setToolTipText(fullName);
+            methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
+            methodLabel.setForeground(Color.blue); 
+            methodLabel.addMouseListener(mouseListener1);
+            form.add(methodLabel);
+     
+        }
        }
         return form;
     }
+    
     private void reservedWords(){
+
         f.entrySet().stream().map((entry) -> {
             String key = entry.getKey();
             ArrayList<JLabel> value = entry.getValue();
@@ -279,7 +315,7 @@ public final class TestWindowTopComponent extends TopComponent {
                 test.setHorizontalAlignment(SwingConstants.CENTER);
                 test.setFont(new Font("Monospaced", Font.PLAIN, 13));
                 test.setForeground(Color.blue);
-                test.addMouseListener(ml);
+                test.addMouseListener(mouseListener1);
                 form.add(test);
             }
             return form;
@@ -296,17 +332,14 @@ public final class TestWindowTopComponent extends TopComponent {
                 }
                 
                 private void updateTextPane( String string) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            Document doc = outputWindow.getDocument();
-                            try {
-                                doc.insertString(doc.getLength(), string, null);
-                            } catch (BadLocationException ex) {
-                                Exceptions.printStackTrace(ex);
-                            }
-                            outputWindow.setCaretPosition(doc.getLength() - 1);
+                    SwingUtilities.invokeLater(() -> {
+                        Document doc = outputWindow.getDocument();
+                        try {
+                            doc.insertString(doc.getLength(), string, null);
+                        } catch (BadLocationException ex) {
+                            Exceptions.printStackTrace(ex);
                         }
+                        outputWindow.setCaretPosition(doc.getLength() - 1);
                     });
                 }
             };
@@ -329,7 +362,7 @@ public final class TestWindowTopComponent extends TopComponent {
                     Process p = Runtime.getRuntime().exec("java "+jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]);
                     BufferedReader in = new BufferedReader(
                             new InputStreamReader(p.getInputStream()));
-                    String line = null;
+                    String line;
                     while ((line = in.readLine()) != null) {
                         try {
                             doc.insertString(doc.getLength(), line+"\n",null );
@@ -338,7 +371,6 @@ public final class TestWindowTopComponent extends TopComponent {
                         }
                     }
                 } catch (IOException ex) {                  
-                    ex.printStackTrace();
                 }
             }else{
                 try {
@@ -350,7 +382,7 @@ public final class TestWindowTopComponent extends TopComponent {
             }
         });
         
-        ml = new MouseAdapter(){
+        mouseListener1 = new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e){
                 Object source = e.getSource();
@@ -360,6 +392,11 @@ public final class TestWindowTopComponent extends TopComponent {
                      try {
                          if ("main".equals(jc.getText())){
                              jEditorPane2.getDocument().insertString(caretPos, "public static void main (String[]args){\n}", null);
+                         }else if("try".equals(jc.getText())){
+                             jEditorPane2.getDocument().insertString(caretPos, "try{\n\n}catch(){}", null);
+                             rwPane.removeAll();
+                             rwPane.repaint();
+                             rwPane.add(returnExceptions());
                          }else
                             jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
                      } catch(BadLocationException ex) {
@@ -385,8 +422,7 @@ public final class TestWindowTopComponent extends TopComponent {
                              else
                                 searchField.getDocument().insertString(caretPos, jc.getText().toLowerCase(), null);
                          }
-                     } catch(BadLocationException ex) {
-                     } catch (IllegalArgumentException ex){                         
+                     } catch(BadLocationException | IllegalArgumentException ex) {                         
                      }      
                 }
             }
@@ -451,10 +487,12 @@ public final class TestWindowTopComponent extends TopComponent {
                 String output  = doc.getText(0, jEditorPane2.getCaretPosition());           
         
                 if (period){
+                   
                    try{                       
                         output = output.substring(output.lastIndexOf("\n")+1);
                         output = output.substring(output.lastIndexOf(" ")+1);
-                        Class newClass = null;
+                        output = output.trim();
+                        Class newClass;
                         String test = output.split("\\.")[0];
                         ArrayList<String> temp = classFinal.get(test);
                         if (temp!= null){
@@ -484,89 +522,81 @@ public final class TestWindowTopComponent extends TopComponent {
 
                             if (newClass.getFields().length !=0)
                                 rwPane.add(returnPanelFields(newClass));
-                            if (newClass.getMethods().length !=0)
+                            if (newClass.getDeclaredMethods().length !=0)
                                 rwPane.add(returnPanelMethods(newClass));
            
                         }
-                   }catch( ArrayIndexOutOfBoundsException exp){
-                   }catch(NullPointerException exp){
-                   }catch(ClassNotFoundException exp){
-                       
-                   }catch (NoSuchFieldException exp){
-                       
+                   }catch( ArrayIndexOutOfBoundsException | NullPointerException | ClassNotFoundException | NoSuchFieldException exp){
                    }
                 }
             }
         });
-        jToggleButton1.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent ev) {
-               if(ev.getStateChange()==ItemEvent.SELECTED){
-                 jToggleButton1.setText("Stop");
-                 jToggleButton1.setForeground(Color.red);
-  
-               } else if(ev.getStateChange()==ItemEvent.DESELECTED){
-                 jToggleButton1.setText("Start");
-                 jToggleButton1.setForeground(Color.blue);
-               }
+        jToggleButton1.addItemListener((ItemEvent ev) -> {
+            if(ev.getStateChange()==ItemEvent.SELECTED){
+                jToggleButton1.setText("Stop");
+                jToggleButton1.setForeground(Color.red);
+                
+            } else if(ev.getStateChange()==ItemEvent.DESELECTED){
+                jToggleButton1.setText("Start");
+                jToggleButton1.setForeground(Color.blue);
             }
-         });
+        });
     
        favorites.add(returnPanelFavorites());
         
        reservedWords();
 
-          JPanel pfinal = new JPanel(new GridLayout(6, 0));
-          pfinal.setBorder(BorderFactory.createTitledBorder("Search results"));
-          
-          JPanel p = new JPanel(new GridLayout(1, 2));
-          p.add(new JLabel("Results:"));
-          searchField = new JTextField();
-          searchField.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        JPanel pfinal = new JPanel(new GridLayout(6, 0));
+        pfinal.setBorder(BorderFactory.createTitledBorder("Search results"));
 
-          p.add(searchField);
-          pfinal.add(p);
-          p = new JPanel(new GridLayout(1, firstRow.length));
-          for(int i = 0; i < firstRow.length; ++i) 
-          {
-              JButton b = new JButton(firstRow[i]);
-              b.addMouseListener(ml);
-              p.add(b);
-          }
-          pfinal.add(p);
-          
-          p = new JPanel(new GridLayout(1, secondRow.length));
-          for(int i = 0; i < secondRow.length; ++i) 
-          {
-              JButton b = new JButton(secondRow[i]);
-              b.addMouseListener(ml);
-              p.add(b);
-          }
-          pfinal.add(p);
-          
-          p = new JPanel(new GridLayout(1, thirdRow.length));
-          for(int i = 0; i < thirdRow.length; ++i) 
-          {
-              JButton b = new JButton(thirdRow[i]);
-              b.addMouseListener(ml);
-              p.add(b);
-          }          
-          pfinal.add(p);
-          
-          p = new JPanel(new GridLayout(1, fourthRow.length));
-          for(int i = 0; i < fourthRow.length; ++i) 
-          {
-              JButton b = new JButton(fourthRow[i]);
-              b.addMouseListener(ml);
-              p.add(b);
-          }
-          pfinal.add(p);
-          
-          p = new JPanel();
-          
-          GridBagLayout gridbag = new GridBagLayout();
-          
-          p.setLayout(gridbag);
+        JPanel p = new JPanel(new GridLayout(1, 2));
+        p.add(new JLabel("Results:"));
+        searchField = new JTextField();
+        searchField.setFont(new Font("Monospaced", Font.PLAIN, 13));
+
+        p.add(searchField);
+        pfinal.add(p);
+        p = new JPanel(new GridLayout(1, firstRow.length));
+        for(int i = 0; i < firstRow.length; ++i) 
+        {
+            JButton b = new JButton(firstRow[i]);
+            b.addMouseListener(mouseListener1);
+            p.add(b);
+        }
+        pfinal.add(p);
+
+        p = new JPanel(new GridLayout(1, secondRow.length));
+        for(int i = 0; i < secondRow.length; ++i) 
+        {
+            JButton b = new JButton(secondRow[i]);
+            b.addMouseListener(mouseListener1);
+            p.add(b);
+        }
+        pfinal.add(p);
+
+        p = new JPanel(new GridLayout(1, thirdRow.length));
+        for(int i = 0; i < thirdRow.length; ++i) 
+        {
+            JButton b = new JButton(thirdRow[i]);
+            b.addMouseListener(mouseListener1);
+            p.add(b);
+        }          
+        pfinal.add(p);
+
+        p = new JPanel(new GridLayout(1, fourthRow.length));
+        for(int i = 0; i < fourthRow.length; ++i) 
+        {
+            JButton b = new JButton(fourthRow[i]);
+            b.addMouseListener(mouseListener1);
+            p.add(b);
+        }
+        pfinal.add(p);
+
+        p = new JPanel();
+
+        GridBagLayout gridbag = new GridBagLayout();
+
+        p.setLayout(gridbag);
         for (String fifthRow1 : fifthRow) {
             JButton b = new JButton(fifthRow1);
             GridBagConstraints c = new GridBagConstraints();
@@ -586,7 +616,7 @@ public final class TestWindowTopComponent extends TopComponent {
                 
                 gridbag.setConstraints(b, c);
             }
-            b.addMouseListener(ml);
+            b.addMouseListener(mouseListener1);
             p.add(b);
         }
           pfinal.add(p);
@@ -600,7 +630,7 @@ public final class TestWindowTopComponent extends TopComponent {
                 
                 if (e.getStateChange() == ItemEvent.SELECTED)
                 {System.out.println(item);
-                   ArrayList <Component> buttons= new ArrayList<Component>();
+                   ArrayList <Component> buttons= new ArrayList<>();
                    reservedWordsCB.removeAll();
                    reservedWordsCB.repaint();
                    
@@ -663,24 +693,24 @@ public final class TestWindowTopComponent extends TopComponent {
                 scrollS.setLayout(new GridLayout(0,2));
                 String output;
                 output = searchField.getText();
-                if (output.length()>0)
+                if (output.length()>0){
                     for(String t:classFinal.keySet()){
-                        t=t.toLowerCase();
-                        output=output.toLowerCase();
-                        if(t.startsWith(output) || t.equals(output)){
-                            if (classFinal.get(Character.toUpperCase(t.charAt(0))+t.substring(1))!=null){
-                                for(String p:classFinal.get(Character.toUpperCase(t.charAt(0))+t.substring(1))){
+                        t = t.toLowerCase();        
+                        if(t.startsWith(output.toLowerCase()) || t.equals(output.toLowerCase())){
+                            if (classFinal.get(t)!=null){
+                                for(String p:classFinal.get(t)){
                                     if(isClass(p)){
                                          JLabel scrollRes = new JLabel(p);
                                          scrollRes.setFont(new Font("Monospaced", Font.PLAIN, 13));
                                          scrollRes.setForeground(Color.blue); 
                                          scrollS.add(scrollRes);
-                                         scrollRes.addMouseListener(ml);
+                                         scrollRes.addMouseListener(mouseListener2);
                                     }
                                 }
                             }                         
                         }
                     }
+                }
                 if (search.getComponentCount()>1)
                     search.remove(1);
                 search.add(new JScrollPane(scrollS),1);
@@ -689,16 +719,60 @@ public final class TestWindowTopComponent extends TopComponent {
                 
             } 
      });
-  
+     mouseListener2 = new MouseAdapter(){
+        @Override
+        public void mouseClicked(MouseEvent e){
+
+            JLabel jc = (JLabel)e.getSource();
+            int caretPos = jEditorPane2.getCaretPosition();
+            String className = jc.getText().split("\\.")[jc.getText().split("\\.").length-1];
+            
+            try {
+                jEditorPane2.getDocument().insertString(caretPos, className+".", null);
+                rwPane.removeAll();
+                rwPane.repaint();
+                
+                if (Class.forName(jc.getText()).getFields().length !=0)
+                    rwPane.add(returnPanelFields(Class.forName(jc.getText())));
+                if (Class.forName(jc.getText()).getDeclaredMethods().length !=0)
+                    rwPane.add(returnPanelMethods(Class.forName(jc.getText())));
+                jTabbedPane1.setSelectedIndex(0);
+            } catch (BadLocationException | ClassNotFoundException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
+
+        }
+        @Override
+        public void mouseEntered(MouseEvent e){
+            Object source = e.getSource();
+            if (source instanceof JLabel){
+                JLabel test = (JLabel)source;
+                test.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        }
+        @Override
+        public void mouseExited(MouseEvent e){
+            Object source = e.getSource();
+            if (source instanceof JLabel){
+                JLabel test = (JLabel)source;
+
+                test.setBorder(null);
+            }
+        }  
+     };
   }
    
     public static boolean isClass(String className){
+ 
         boolean exist = true;
         try 
         {
-            Class.forName(className);
+            if(Modifier.isPublic(Class.forName(className).getModifiers())){
+                exist = true;
+            }
         } 
-        catch (ClassNotFoundException e) 
+        catch (Exception | Error e) 
         {
             exist = false;
         }
@@ -925,7 +999,7 @@ public final class TestWindowTopComponent extends TopComponent {
                    
                    Component Xaxis = components[1];
                    Component Yaxis = components[2];
-                   buttons= new HashMap<String,Component>();
+                   buttons= new HashMap<>();
                     for (Component component : components) {
        
                         if (component.getName().equalsIgnoreCase("x axis") && component.isAnalog()) {
@@ -933,7 +1007,7 @@ public final class TestWindowTopComponent extends TopComponent {
                         }else if (component.getName().equalsIgnoreCase("y axis") && component.isAnalog()) {
                             Yaxis = component;
                         }else if(component.getName().contains("Button")){
-                            buttons.put(component.getName().toString(),component);
+                            buttons.put(component.getName(),component);
                         }                       
 
                     }
@@ -1039,15 +1113,13 @@ public final class TestWindowTopComponent extends TopComponent {
        for (Enumeration<JarEntry> list = jar.entries(); list.hasMoreElements(); ) {        
           entry  = list.nextElement().getName();        
           if (entry.endsWith(".class")){
-            
                   splittedString= entry.replace("/",".").split("\\.");
-
                   arrayString  = classFinal.get(splittedString[splittedString.length-2]);
                   String packagePath  = entry.replace("/"+splittedString[splittedString.length-2]+".class", "");  
                   arrayClasses = packageFinal.get(packagePath);
-
+                  
                   if (arrayString == null){
-                      arrayString = new ArrayList<String>();
+                      arrayString = new ArrayList<>();
                       arrayString.add(entry.replace("/",".").replace(".class", ""));
                       classFinal.put(splittedString[splittedString.length-2], arrayString);
                   }else{
@@ -1055,13 +1127,14 @@ public final class TestWindowTopComponent extends TopComponent {
                       classFinal.put(splittedString[splittedString.length-2], arrayString);
                   }
                   if(arrayClasses==null){
-                      arrayClasses = new ArrayList<String>();
+                      arrayClasses = new ArrayList<>();
                       arrayClasses.add(splittedString[splittedString.length-2]);
                       packageFinal.put(packagePath, arrayClasses);
                   }else{
                       arrayClasses.add(splittedString[splittedString.length-2]);
                       packageFinal.put(packagePath, arrayClasses);
                   }
+
                      
           }
        }
