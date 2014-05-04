@@ -13,6 +13,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -39,6 +40,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -106,23 +109,26 @@ public final class TestWindowTopComponent extends TopComponent {
 
     private static  MouseListener mouseListener1;
     private static  MouseListener mouseListener2;
+
     private JEditorPane jEditorPane2 = null;
-    private final ReservedWords r;
+    private final ReservedWords resWords;
     private final  Map<String, ArrayList<JLabel>>  f;
     private ArrayList<Controller> newsticks;
     private final   Set<File> content  = new HashSet<>();
     private final   Map<String, ArrayList<String>> classFinal = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private  Map<String, ArrayList<String>> packageFinal = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private static final  String[] classFavoritesInit = {"java.lang.String","java.lang.System","java.lang.Exception"
+    private final  Map<String, ArrayList<String>> packageFinal = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private static final  String[][] favoritesAndVariables = {{"java.lang.String","java.lang.System","java.lang.Exception"
                                                ,"java.util.ArrayList","java.util.HashMap","java.lang.Object"
-                                               ,"java.lang.Thread","java.lang.Class","java.util.Date","java.util.Iterator"};
-    private static final ArrayList<String> classFavorites = new ArrayList<>();
+                                               ,"java.lang.Thread","java.lang.Class","java.util.Date","java.util.Iterator"},
+                                            {"i","j","k","l","m","n","o","p"}};
+
+    private static final Map<String, ArrayList<String>> classFavAndVar = new HashMap<>();
     private Component[] components;
     private boolean period = false;
     private final String firstRow[] = {"1","2","3","4","5","6","7","8","9","0","-","+","Backspace"};//BackSpace
     private final String secondRow[] = {"Q","W","E","R","T","Y","U","I","O","P","[","]","\\"};
-    private final String thirdRow[] = {"A","S","D","F","G","H","J","K","L",":","\"","Enter"};
-    private final String fourthRow[] = {"Shift","Z","X","C","V","B","N","M",",",".","?","   ^" };
+    private final String thirdRow[] = {"A","S","D","F","G","H","J","K","L",":",";","Enter"};
+    private final String fourthRow[] = {"Shift","Z","X","C","V","B","N","M",",",".","?","(", ")"};
     private final String fifthRow[]={"Space" ,"<" ,">" };
     private JTextField searchField;
     private boolean upperCase = true;
@@ -130,16 +136,26 @@ public final class TestWindowTopComponent extends TopComponent {
     private JPopupMenu popupPackage;
     private boolean leftButton = false;
     private JTextPane outputWindow;
-    private String classFromSearch;
+    private Point mousePos;
+    private int currX;
+    private int currY;
+    private int newX;
+    private int newY;
+    private Robot r;
+    private Component Xaxis;
+    private Component Yaxis;
     private final UndoRedo.Manager manager = new UndoRedo.Manager();
     private JButton run;
+    private Map <String, Component> buttons;
     
     public TestWindowTopComponent() throws IOException, BadLocationException{
-            r = new ReservedWords("test");
-            f = r.retList();
+            resWords = new ReservedWords("test");
+            f = resWords.retList();
             
             String loc = System.getProperty("sun.boot.class.path");
-            classFavorites.addAll(Arrays.asList(classFavoritesInit));
+
+            classFavAndVar.put("Favorites", new ArrayList<>(Arrays.asList(favoritesAndVariables[0])));
+            classFavAndVar.put("Variables", new ArrayList<>(Arrays.asList(favoritesAndVariables[1])));
             for (String path:loc.split(";")){
                  File test = new File(path);
                  if (test.isDirectory() && test.exists())
@@ -216,23 +232,44 @@ public final class TestWindowTopComponent extends TopComponent {
        }
        return form;
     }
+    
+    private JPanel returnPanelVariables (){
+        
+       JPanel form = new JPanel();
+       form.setLayout(new GridLayout(0,4));
+       TitledBorder title;
+       title = BorderFactory.createTitledBorder("Variable name suggestions");
+       form.setBorder(title); 
+       
+       if (classFavAndVar.isEmpty())
+           return null;
+       for (String classF: classFavAndVar.get("Variables")){
+            JLabel methodLabel = new JLabel(classF);
+            methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
+            methodLabel.setForeground(Color.blue);
+            form.add(methodLabel);
+            methodLabel.addMouseListener(mouseListener1);
+       }
+       return form;
+    }
     private JPanel returnPanelFavorites (){
         
        JPanel form = new JPanel();
-       form.setLayout(new GridLayout(10,0));
+       form.setLayout(new GridLayout(0,2));
        TitledBorder title;
        title = BorderFactory.createTitledBorder("Favorites");
        form.setBorder(title); 
        
-       if (classFavorites.isEmpty())
+       if (classFavAndVar.isEmpty())
            return null;
-       for (String classF: classFavorites){
+       for (String classF: classFavAndVar.get("Favorites")){
             JLabel methodLabel = new JLabel(classF);
             methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
             methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
-            methodLabel.setForeground(Color.blue); 
-            methodLabel.addMouseListener(mouseListener1);
+            methodLabel.setForeground(Color.blue);
             form.add(methodLabel);
+            methodLabel.addMouseListener(mouseListener2);
        }
        return form;
     }
@@ -280,15 +317,19 @@ public final class TestWindowTopComponent extends TopComponent {
        {
         if(Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers()) ){
             Class parameters[] = method.getParameterTypes();
-            String fullName = method.getName();
-            if (parameters.length != 0){
-                fullName += " (";
-                for (Class parameter: parameters)
-                        fullName +=parameter.getSimpleName()+" ,";
-                fullName = fullName.substring(0, fullName.length() - 1) +")";
 
+            String fullName = "<html><b>"+"Method name: "+method.getName()+ "</b><br>";
+            if (parameters.length != 0){
+                fullName += "Parameters:<ul>";
+                for (Class parameter: parameters)
+                        fullName +="<li>"+parameter.getSimpleName()+"</li>";
+                fullName += "</ul></html>";
+
+            }else{
+                fullName+="No parameters! </html>";
             }
-            JLabel methodLabel = new JLabel(fullName);
+            JLabel methodLabel = new JLabel(method.getName());
+            
             methodLabel.setToolTipText(fullName);
             methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
             methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
@@ -382,120 +423,134 @@ public final class TestWindowTopComponent extends TopComponent {
             }
         });
         
-        mouseListener1 = new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e){
-                Object source = e.getSource();
-                if (source instanceof JLabel){
-                    JLabel jc = (JLabel)e.getSource();
-                     int caretPos = jEditorPane2.getCaretPosition();
-                     try {
-                         if ("main".equals(jc.getText())){
-                             jEditorPane2.getDocument().insertString(caretPos, "public static void main (String[]args){\n}", null);
-                         }else if("try".equals(jc.getText())){
-                             jEditorPane2.getDocument().insertString(caretPos, "try{\n\n}catch(){}", null);
-                             rwPane.removeAll();
-                             rwPane.repaint();
-                             rwPane.add(returnExceptions());
-                         }else
-                            jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
-                     } catch(BadLocationException ex) {
-                     }                
-                }else if(source instanceof JButton){
-                     JButton jc = (JButton)e.getSource();
-                     searchField.getCaret().setBlinkRate(500);
-                     int caretPos = searchField.getCaretPosition();
-                     try {
-                         if ("Backspace".equals(jc.getText())){                          
-                                searchField.getDocument().remove(caretPos-1,1);
-                         }else if ("Shift".equals(jc.getText())){
-                             upperCase = !upperCase;
-                         } else if ("<".equals(jc.getText())){                            
-                                searchField.setCaretPosition(caretPos-1);
-                         }else if (">".equals(jc.getText())){                            
-                                searchField.setCaretPosition(caretPos+1);
-                         }else if ("Space".equals(jc.getText())){
-                             searchField.getDocument().insertString(caretPos, " ", null);
-                         }else{
-                             if(upperCase )
-                                searchField.getDocument().insertString(caretPos, jc.getText(), null);
-                             else
-                                searchField.getDocument().insertString(caretPos, jc.getText().toLowerCase(), null);
-                         }
-                     } catch(BadLocationException | IllegalArgumentException ex) {                         
-                     }      
-                }
-            }
-            @Override
-            public void mouseEntered(MouseEvent e){
-                Object source = e.getSource();
-                if (source instanceof JLabel){
-                    JLabel test = (JLabel)source;
-                    test.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                }
-            }
-            @Override
-            public void mouseExited(MouseEvent e){
-                Object source = e.getSource();
-                if (source instanceof JLabel){
-                    JLabel test = (JLabel)source;
-                    
-                    test.setBorder(null);
-                }
-            }  
-        }; 
+    mouseListener1 = new MouseAdapter(){
+        @Override
+        public void mouseClicked(MouseEvent e){
+            Object source = e.getSource();
+            if (source instanceof JLabel){
+                JLabel jc = (JLabel)e.getSource();
+                 int caretPos = jEditorPane2.getCaretPosition();
+                 
+                 try {
+                     if ("main".equals(jc.getText())){
+                         jEditorPane2.getDocument().insertString(caretPos, "public static void main (String[]args){\n}", null);
+                     }else if("try".equals(jc.getText())){
+                         jEditorPane2.getDocument().insertString(caretPos, "try{\n\n}catch( ){}", null);
+                         Rectangle rectangle = jEditorPane2.modelToView( jEditorPane2.getCaretPosition() );
+                         System.out.println(rectangle+" "+caretPos);
+                         rwPane.removeAll();
+                         rwPane.repaint();
+                         rwPane.add(returnExceptions());
+                     }else if(jc.getToolTipText().length() > 0 ){
+                        String fin = jc.getText()+" ("; 
+                            if (jc.getToolTipText().contains("Parameters:")){
+                                List<String> par= Arrays.asList( jc.getToolTipText().replaceAll("^.*?<li>", "").split("</li>.*?(<li>|$)"));
+                                if (!par.isEmpty()){
+                                    for (String par_f:par)
+                                        fin+=" ,";
+                                }
+                                fin = fin.substring(0, fin.lastIndexOf(",") - 1)+" )";
+                            }else
+                               fin+=")" ;
+                        jEditorPane2.getDocument().insertString(caretPos, fin, null);
+                     }else
+                        jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
+                 } catch(BadLocationException | NullPointerException ex) {
+                 }                
+            }else if(source instanceof JButton){
+                 JButton jc = (JButton)e.getSource();
 
-        jEditorPane2.addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-            }          
-            @Override
-            public void keyReleased(KeyEvent e) {
+                 int caretPos = searchField.getCaretPosition();
+                 try {
+                     if ("Backspace".equals(jc.getText())){                          
+                            searchField.getDocument().remove(caretPos-1,1);
+                     }else if ("Shift".equals(jc.getText())){
+                         upperCase = !upperCase;
+                     } else if ("<".equals(jc.getText())){                            
+                            searchField.setCaretPosition(caretPos-1);
+                     }else if (">".equals(jc.getText())){                            
+                            searchField.setCaretPosition(caretPos+1);
+                     }else if ("Space".equals(jc.getText())){
+                         searchField.getDocument().insertString(caretPos, " ", null);
+                     }else{
+                         if(upperCase )
+                            searchField.getDocument().insertString(caretPos, jc.getText(), null);
+                         else
+                            searchField.getDocument().insertString(caretPos, jc.getText().toLowerCase(), null);
+                     }
+                 } catch(BadLocationException | IllegalArgumentException ex) {                         
+                 }      
             }
-            @Override
-            public void keyTyped(KeyEvent e) {                
-                period = e.getKeyChar() == '.';
-                if(period && popupPackage!=null){
+        }
+        @Override
+        public void mouseEntered(MouseEvent e){
+            Object source = e.getSource();
+            if (source instanceof JLabel){
+                JLabel test = (JLabel)source;
+                test.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        }
+        @Override
+        public void mouseExited(MouseEvent e){
+            Object source = e.getSource();
+            if (source instanceof JLabel){
+                JLabel test = (JLabel)source;
+
+                test.setBorder(null);
+            }
+        }  
+    }; 
+
+    jEditorPane2.addKeyListener(new KeyListener() {
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+        }          
+        @Override
+        public void keyReleased(KeyEvent e) {
+        }
+        @Override
+        public void keyTyped(KeyEvent e) {                
+            period = e.getKeyChar() == '.';
+            if(period && popupPackage!=null){
 //                    popupPackage.show(jEditorPane2, jEditorPane2.getX(), jEditorPane2.getY());
-                }
             }
-        });
-        
-        jEditorPane2.getDocument().addDocumentListener(new DocumentListener()
-        {
+        }
+    });
 
-            @Override
-            public void changedUpdate(DocumentEvent arg0){}
-            @Override
-            public void insertUpdate(DocumentEvent arg0){
-                try {
-                    update(arg0);
-                } catch (BadLocationException ex) {
-                    Exceptions.printStackTrace(ex);
-                } catch (Exception ex) {
-                    Exceptions.printStackTrace(ex);
-                } 
-            }
-            
-            @Override
-            public void removeUpdate(DocumentEvent arg0){ }
-            @SuppressWarnings("null")
-            public void update(DocumentEvent e) throws BadLocationException, Exception{
-                
-                Document doc = e.getDocument();                     
-                String output  = doc.getText(0, jEditorPane2.getCaretPosition());           
-        
-                if (period){
-                   
-                   try{                       
-                        output = output.substring(output.lastIndexOf("\n")+1);
-                        output = output.substring(output.lastIndexOf(" ")+1);
-                        output = output.trim();
-                        Class newClass;
-                        String test = output.split("\\.")[0];
-                        ArrayList<String> temp = classFinal.get(test);
-                        if (temp!= null){
+    jEditorPane2.getDocument().addDocumentListener(new DocumentListener(){
+
+        @Override
+        public void changedUpdate(DocumentEvent arg0){}
+        @Override
+        public void insertUpdate(DocumentEvent arg0){
+            try {
+                update(arg0);
+            } catch (BadLocationException ex) {
+                Exceptions.printStackTrace(ex);
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            } 
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent arg0){ }
+        @SuppressWarnings("null")
+        public void update(DocumentEvent e) throws BadLocationException, Exception{
+
+            Document doc = e.getDocument();                     
+            String output  = doc.getText(0, jEditorPane2.getCaretPosition());           
+
+            if (period){
+
+               try{                       
+                    output = output.substring(output.lastIndexOf("\n")+1);
+                    output = output.substring(output.lastIndexOf(" ")+1);
+                    output = output.trim();
+                    Class newClass;
+                    String test = output.split("\\.")[0];
+                    ArrayList<String> temp = classFinal.get(test);
+                    if (temp!= null){
 //                            popupPackage = null;
 //                            if(temp.size()>1){
 //                                Rectangle rectangle = jEditorPane2.modelToView( jEditorPane2.getCaretPosition());
@@ -508,121 +563,41 @@ public final class TestWindowTopComponent extends TopComponent {
 //                              
 //                                 popupPackage.show(jEditorPane2, rectangle.x, rectangle.y + rectangle.height);
 //                            }else{
-                                newClass = Class.forName(temp.get(0));
-                                for (String s:output.split("\\."))
-                                    System.out.println(s+" " +output.split("\\.").length);
-                                if (output.split("\\.").length > 1){
-                                    newClass = Class.forName(newClass.getField(output.split("\\.")[1]).getType().getCanonicalName());
-                                   
-                                }
-                                    
+                            newClass = Class.forName(temp.get(0));
+                            for (String s:output.split("\\."))
+                                System.out.println(s+" " +output.split("\\.").length);
+                            if (output.split("\\.").length > 1){
+                                newClass = Class.forName(newClass.getField(output.split("\\.")[1]).getType().getCanonicalName());
+
+                            }
+
 //                            }
-                            rwPane.removeAll();
-                            rwPane.repaint();
+                        rwPane.removeAll();
+                        rwPane.repaint();
 
-                            if (newClass.getFields().length !=0)
-                                rwPane.add(returnPanelFields(newClass));
-                            if (newClass.getDeclaredMethods().length !=0)
-                                rwPane.add(returnPanelMethods(newClass));
-           
-                        }
-                   }catch( ArrayIndexOutOfBoundsException | NullPointerException | ClassNotFoundException | NoSuchFieldException exp){
-                   }
-                }
+                        if (newClass.getFields().length !=0)
+                            rwPane.add(returnPanelFields(newClass));
+                        if (newClass.getDeclaredMethods().length !=0)
+                            rwPane.add(returnPanelMethods(newClass));
+
+                    }
+               }catch( ArrayIndexOutOfBoundsException | NullPointerException | ClassNotFoundException | NoSuchFieldException exp){
+               }
             }
-        });
-        jToggleButton1.addItemListener((ItemEvent ev) -> {
-            if(ev.getStateChange()==ItemEvent.SELECTED){
-                jToggleButton1.setText("Stop");
-                jToggleButton1.setForeground(Color.red);
-                
-            } else if(ev.getStateChange()==ItemEvent.DESELECTED){
-                jToggleButton1.setText("Start");
-                jToggleButton1.setForeground(Color.blue);
-            }
-        });
-    
-       favorites.add(returnPanelFavorites());
-        
-       reservedWords();
-
-        JPanel pfinal = new JPanel(new GridLayout(6, 0));
-        pfinal.setBorder(BorderFactory.createTitledBorder("Search results"));
-
-        JPanel p = new JPanel(new GridLayout(1, 2));
-        p.add(new JLabel("Results:"));
-        searchField = new JTextField();
-        searchField.setFont(new Font("Monospaced", Font.PLAIN, 13));
-
-        p.add(searchField);
-        pfinal.add(p);
-        p = new JPanel(new GridLayout(1, firstRow.length));
-        for(int i = 0; i < firstRow.length; ++i) 
-        {
-            JButton b = new JButton(firstRow[i]);
-            b.addMouseListener(mouseListener1);
-            p.add(b);
         }
-        pfinal.add(p);
+    });
+    toggleJoystick.addItemListener((ItemEvent ev) -> {
+        if(ev.getStateChange()==ItemEvent.SELECTED){
+            toggleJoystick.setText("Stop");
+            toggleJoystick.setForeground(Color.red);
 
-        p = new JPanel(new GridLayout(1, secondRow.length));
-        for(int i = 0; i < secondRow.length; ++i) 
-        {
-            JButton b = new JButton(secondRow[i]);
-            b.addMouseListener(mouseListener1);
-            p.add(b);
+        } else if(ev.getStateChange()==ItemEvent.DESELECTED){
+            toggleJoystick.setText("Start");
+            toggleJoystick.setForeground(Color.blue);
         }
-        pfinal.add(p);
-
-        p = new JPanel(new GridLayout(1, thirdRow.length));
-        for(int i = 0; i < thirdRow.length; ++i) 
-        {
-            JButton b = new JButton(thirdRow[i]);
-            b.addMouseListener(mouseListener1);
-            p.add(b);
-        }          
-        pfinal.add(p);
-
-        p = new JPanel(new GridLayout(1, fourthRow.length));
-        for(int i = 0; i < fourthRow.length; ++i) 
-        {
-            JButton b = new JButton(fourthRow[i]);
-            b.addMouseListener(mouseListener1);
-            p.add(b);
-        }
-        pfinal.add(p);
-
-        p = new JPanel();
-
-        GridBagLayout gridbag = new GridBagLayout();
-
-        p.setLayout(gridbag);
-        for (String fifthRow1 : fifthRow) {
-            JButton b = new JButton(fifthRow1);
-            GridBagConstraints c = new GridBagConstraints();
-            if ("Space".equals(fifthRow1)) {
-                c.gridwidth = 1;
-                c.gridheight = 1;
-                c.fill = GridBagConstraints.BOTH;
-                c.weightx = 0.70;
-                c.weighty = 1;
-                gridbag.setConstraints(b, c);
-            } else {
-                c.gridwidth = 1;
-                c.gridheight = 1;
-                c.fill = GridBagConstraints.BOTH;
-                c.weightx = 0.10;
-                c.weighty = 1;
-                
-                gridbag.setConstraints(b, c);
-            }
-            b.addMouseListener(mouseListener1);
-            p.add(b);
-        }
-          pfinal.add(p);
-          search.add(pfinal);
+    });
           
-        jComboBox1.addItemListener(new ItemListener(){
+    controllerList.addItemListener(new ItemListener(){
             @Override
             public void itemStateChanged(ItemEvent e)
             {
@@ -664,62 +639,136 @@ public final class TestWindowTopComponent extends TopComponent {
                 }  
             }
         });
-         searchField.getDocument().addDocumentListener(new DocumentListener()
-        {
+    JPanel pfinal = new JPanel(new GridLayout(6, 0));
+    pfinal.setBorder(BorderFactory.createTitledBorder("Search results"));
 
-            @Override
-            public void changedUpdate(DocumentEvent arg0){}
-            @Override
-            public void insertUpdate(DocumentEvent arg0){
-                try {
-                    update(arg0);
-                } catch (BadLocationException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-            
-            @Override
-            public void removeUpdate(DocumentEvent arg0){
-                try {
-                    update(arg0);
-                } catch (BadLocationException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
-            @SuppressWarnings("null")
-         
-            public void update(DocumentEvent e) throws BadLocationException{
-                scrollS = new JPanel();
-                scrollS.setLayout(new GridLayout(0,2));
-                String output;
-                output = searchField.getText();
-                if (output.length()>0){
-                    for(String t:classFinal.keySet()){
-                        t = t.toLowerCase();        
-                        if(t.startsWith(output.toLowerCase()) || t.equals(output.toLowerCase())){
-                            if (classFinal.get(t)!=null){
-                                for(String p:classFinal.get(t)){
-                                    if(isClass(p)){
-                                         JLabel scrollRes = new JLabel(p);
-                                         scrollRes.setFont(new Font("Monospaced", Font.PLAIN, 13));
-                                         scrollRes.setForeground(Color.blue); 
-                                         scrollS.add(scrollRes);
-                                         scrollRes.addMouseListener(mouseListener2);
-                                    }
-                                }
-                            }                         
-                        }
-                    }
-                }
-                if (search.getComponentCount()>1)
-                    search.remove(1);
-                search.add(new JScrollPane(scrollS),1);
-                search.validate();
-                search.repaint();
-                
-            } 
-     });
-     mouseListener2 = new MouseAdapter(){
+    JPanel p = new JPanel(new GridLayout(1, 2));
+    p.add(new JLabel("Results:"));
+    searchField = new JTextField();
+    searchField.setFont(new Font("Monospaced", Font.PLAIN, 13));
+
+    p.add(searchField);
+    pfinal.add(p);
+    p = new JPanel(new GridLayout(1, firstRow.length));
+    for(int i = 0; i < firstRow.length; ++i) 
+    {
+        JButton b = new JButton(firstRow[i]);
+        b.addMouseListener(mouseListener1);
+        p.add(b);
+    }
+    pfinal.add(p);
+
+    p = new JPanel(new GridLayout(1, secondRow.length));
+    for(int i = 0; i < secondRow.length; ++i) 
+    {
+        JButton b = new JButton(secondRow[i]);
+        b.addMouseListener(mouseListener1);
+        p.add(b);
+    }
+    pfinal.add(p);
+
+    p = new JPanel(new GridLayout(1, thirdRow.length));
+    for(int i = 0; i < thirdRow.length; ++i) 
+    {
+        JButton b = new JButton(thirdRow[i]);
+        b.addMouseListener(mouseListener1);
+        p.add(b);
+    }          
+    pfinal.add(p);
+
+    p = new JPanel(new GridLayout(1, fourthRow.length));
+    for(int i = 0; i < fourthRow.length; ++i) 
+    {
+        JButton b = new JButton(fourthRow[i]);
+        b.addMouseListener(mouseListener1);
+        p.add(b);
+    }
+    pfinal.add(p);
+
+    p = new JPanel();
+
+    GridBagLayout gridbag = new GridBagLayout();
+
+    p.setLayout(gridbag);
+    for (String fifthRow1 : fifthRow) {
+        JButton b = new JButton(fifthRow1);
+        GridBagConstraints c = new GridBagConstraints();
+        if ("Space".equals(fifthRow1)) {
+            c.gridwidth = 1;
+            c.gridheight = 1;
+            c.fill = GridBagConstraints.BOTH;
+            c.weightx = 0.70;
+            c.weighty = 1;
+            gridbag.setConstraints(b, c);
+        } else {
+            c.gridwidth = 1;
+            c.gridheight = 1;
+            c.fill = GridBagConstraints.BOTH;
+            c.weightx = 0.10;
+            c.weighty = 1;
+
+            gridbag.setConstraints(b, c);
+        }
+        b.addMouseListener(mouseListener1);
+        p.add(b);
+    }
+      pfinal.add(p);
+      search.add(pfinal);
+    searchField.getDocument().addDocumentListener(new DocumentListener(){
+
+       @Override
+       public void changedUpdate(DocumentEvent arg0){}
+       @Override
+       public void insertUpdate(DocumentEvent arg0){
+           try {
+               update(arg0);
+           } catch (BadLocationException ex) {
+               Exceptions.printStackTrace(ex);
+           }
+       }
+
+       @Override
+       public void removeUpdate(DocumentEvent arg0){
+           try {
+               update(arg0);
+           } catch (BadLocationException ex) {
+               Exceptions.printStackTrace(ex);
+           }
+       }
+       @SuppressWarnings("null")
+
+       public void update(DocumentEvent e) throws BadLocationException{
+           scrollS = new JPanel();
+           scrollS.setLayout(new GridLayout(0,2));
+           String output;
+           output = searchField.getText();
+           if (output.length()>0){
+               for(String t:classFinal.keySet()){
+                   t = t.toLowerCase();        
+                   if(t.startsWith(output.toLowerCase()) || t.equals(output.toLowerCase())){
+                       if (classFinal.get(t)!=null){
+                           for(String p:classFinal.get(t)){
+                               if(isClass(p)){
+                                    JLabel scrollRes = new JLabel(p);
+                                    scrollRes.setFont(new Font("Monospaced", Font.PLAIN, 13));
+                                    scrollRes.setForeground(Color.blue); 
+                                    scrollS.add(scrollRes);
+                                    scrollRes.addMouseListener(mouseListener2);
+                               }
+                           }
+                       }                         
+                   }
+               }
+           }
+           if (search.getComponentCount()>1)
+               search.remove(1);
+           search.add(new JScrollPane(scrollS),1);
+           search.validate();
+           search.repaint();
+
+       } 
+});
+    mouseListener2 = new MouseAdapter(){
         @Override
         public void mouseClicked(MouseEvent e){
 
@@ -760,7 +809,11 @@ public final class TestWindowTopComponent extends TopComponent {
                 test.setBorder(null);
             }
         }  
-     };
+     };   
+    favAndVarPanel.add(returnPanelFavorites());
+    favAndVarPanel.add(returnPanelVariables());
+    reservedWords();
+
   }
    
     public static boolean isClass(String className){
@@ -793,22 +846,22 @@ public final class TestWindowTopComponent extends TopComponent {
         rwPane = new javax.swing.JPanel();
         calibrationPane = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
-        jLabel1 = new javax.swing.JLabel();
+        controllersLabel = new javax.swing.JLabel();
+        controllerList = new javax.swing.JComboBox();
+        leftClickLabel = new javax.swing.JLabel();
+        leftClickCB = new javax.swing.JComboBox();
+        reservedWordsLabel = new javax.swing.JLabel();
         reservedWordsCB = new javax.swing.JComboBox();
-        jLabel2 = new javax.swing.JLabel();
+        classLabel = new javax.swing.JLabel();
         ClassCB = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
+        searchLabel = new javax.swing.JLabel();
         searchTabCB = new javax.swing.JComboBox();
-        jLabel4 = new javax.swing.JLabel();
+        favoritesLabel = new javax.swing.JLabel();
         favoritesTabCB = new javax.swing.JComboBox();
-        jLabel5 = new javax.swing.JLabel();
-        jComboBox6 = new javax.swing.JComboBox();
         jPanel1 = new javax.swing.JPanel();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jButton1 = new javax.swing.JButton();
-        favorites = new javax.swing.JPanel();
+        toggleJoystick = new javax.swing.JToggleButton();
+        refreshButton = new javax.swing.JButton();
+        favAndVarPanel = new javax.swing.JPanel();
         search = new javax.swing.JPanel();
         editorWindowPane = new javax.swing.JPanel();
         toolbarEditorPane = new javax.swing.JPanel();
@@ -837,51 +890,49 @@ public final class TestWindowTopComponent extends TopComponent {
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jPanel2.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 153))); // NOI18N
         jPanel2.setLayout(new java.awt.GridLayout(6, 2));
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jLabel6.text")); // NOI18N
-        jPanel2.add(jLabel6);
+        controllersLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(controllersLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.controllersLabel.text")); // NOI18N
+        jPanel2.add(controllersLabel);
 
-        jComboBox1.setMinimumSize(new java.awt.Dimension(100, 100));
-        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+        controllerList.setMinimumSize(new java.awt.Dimension(100, 100));
+        controllerList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox1ActionPerformed(evt);
+                controllerListActionPerformed(evt);
             }
         });
-        jPanel2.add(jComboBox1);
-        jComboBox1.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jComboBox1.AccessibleContext.accessibleName")); // NOI18N
+        jPanel2.add(controllerList);
+        controllerList.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.controllerList.AccessibleContext.accessibleName")); // NOI18N
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jLabel1.text")); // NOI18N
-        jPanel2.add(jLabel1);
+        org.openide.awt.Mnemonics.setLocalizedText(leftClickLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.leftClickLabel.text")); // NOI18N
+        jPanel2.add(leftClickLabel);
+
+        jPanel2.add(leftClickCB);
+
+        org.openide.awt.Mnemonics.setLocalizedText(reservedWordsLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.reservedWordsLabel.text")); // NOI18N
+        jPanel2.add(reservedWordsLabel);
 
         jPanel2.add(reservedWordsCB);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jLabel2.text")); // NOI18N
-        jPanel2.add(jLabel2);
+        org.openide.awt.Mnemonics.setLocalizedText(classLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.classLabel.text")); // NOI18N
+        jPanel2.add(classLabel);
 
         ClassCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         ClassCB.setSelectedIndex(-1);
         jPanel2.add(ClassCB);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jLabel3.text")); // NOI18N
-        jPanel2.add(jLabel3);
+        org.openide.awt.Mnemonics.setLocalizedText(searchLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.searchLabel.text")); // NOI18N
+        jPanel2.add(searchLabel);
 
         searchTabCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         searchTabCB.setSelectedIndex(-1);
         jPanel2.add(searchTabCB);
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jLabel4.text")); // NOI18N
-        jPanel2.add(jLabel4);
+        org.openide.awt.Mnemonics.setLocalizedText(favoritesLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.favoritesLabel.text")); // NOI18N
+        jPanel2.add(favoritesLabel);
 
         favoritesTabCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         favoritesTabCB.setSelectedIndex(-1);
         jPanel2.add(favoritesTabCB);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jLabel5.text")); // NOI18N
-        jPanel2.add(jLabel5);
-
-        jComboBox6.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jComboBox6.setSelectedIndex(-1);
-        jPanel2.add(jComboBox6);
 
         calibrationPane.add(jPanel2);
         jPanel2.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jPanel2.AccessibleContext.accessibleName")); // NOI18N
@@ -889,16 +940,16 @@ public final class TestWindowTopComponent extends TopComponent {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("")));
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        jToggleButton1.setForeground(new java.awt.Color(0, 0, 204));
-        org.openide.awt.Mnemonics.setLocalizedText(jToggleButton1, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jToggleButton1.text")); // NOI18N
-        jToggleButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        toggleJoystick.setForeground(new java.awt.Color(0, 0, 204));
+        org.openide.awt.Mnemonics.setLocalizedText(toggleJoystick, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.toggleJoystick.text")); // NOI18N
+        toggleJoystick.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jToggleButton1MouseClicked(evt);
+                toggleJoystickMouseClicked(evt);
             }
         });
-        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+        toggleJoystick.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton1ActionPerformed(evt);
+                toggleJoystickActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -909,18 +960,18 @@ public final class TestWindowTopComponent extends TopComponent {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LAST_LINE_START;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
-        jPanel1.add(jToggleButton1, gridBagConstraints);
+        jPanel1.add(toggleJoystick, gridBagConstraints);
 
-        jButton1.setForeground(new java.awt.Color(0, 204, 51));
-        org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jButton1.text")); // NOI18N
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+        refreshButton.setForeground(new java.awt.Color(0, 204, 51));
+        org.openide.awt.Mnemonics.setLocalizedText(refreshButton, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.refreshButton.text")); // NOI18N
+        refreshButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+                refreshButtonMouseClicked(evt);
             }
         });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                refreshButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -931,14 +982,14 @@ public final class TestWindowTopComponent extends TopComponent {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
-        jPanel1.add(jButton1, gridBagConstraints);
+        jPanel1.add(refreshButton, gridBagConstraints);
 
         calibrationPane.add(jPanel1);
 
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.calibrationPane.TabConstraints.tabTitle"), calibrationPane); // NOI18N
 
-        favorites.setLayout(new java.awt.GridLayout(0, 1));
-        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.favorites.TabConstraints.tabTitle"), favorites); // NOI18N
+        favAndVarPanel.setLayout(new java.awt.GridLayout(2, 1));
+        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.favAndVarPanel.TabConstraints.tabTitle"), favAndVarPanel); // NOI18N
 
         search.setLayout(new java.awt.GridLayout(2, 1));
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.search.TabConstraints.tabTitle"), search); // NOI18N
@@ -974,18 +1025,18 @@ public final class TestWindowTopComponent extends TopComponent {
         add(jInternalFrame1);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+    private void controllerListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_controllerListActionPerformed
 
-    }//GEN-LAST:event_jComboBox1ActionPerformed
+    }//GEN-LAST:event_controllerListActionPerformed
 
-    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+    private void toggleJoystickActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleJoystickActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
+    }//GEN-LAST:event_toggleJoystickActionPerformed
 
-    private void jToggleButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jToggleButton1MouseClicked
-        Map <String, Component> buttons;
-        if(jToggleButton1.isSelected()){
-            String t = jComboBox1.getSelectedItem().toString();
+    private void toggleJoystickMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toggleJoystickMouseClicked
+
+        if(toggleJoystick.isSelected()){
+            String t = controllerList.getSelectedItem().toString();
            
             for (Controller selectedCont: newsticks){
                 if(selectedCont.getName().equals(t)){
@@ -997,13 +1048,13 @@ public final class TestWindowTopComponent extends TopComponent {
                         System.exit(1);
                     }
                    
-                   Component Xaxis = components[1];
-                   Component Yaxis = components[2];
+                   Xaxis = components[1];
+                   Yaxis = components[2];
                    buttons= new HashMap<>();
                     for (Component component : components) {
        
                         if (component.getName().equalsIgnoreCase("x axis") && component.isAnalog()) {
-                          Xaxis = component;
+                            Xaxis = component;
                         }else if (component.getName().equalsIgnoreCase("y axis") && component.isAnalog()) {
                             Yaxis = component;
                         }else if(component.getName().contains("Button")){
@@ -1014,74 +1065,72 @@ public final class TestWindowTopComponent extends TopComponent {
 //                    for (Component buttonC:buttons){
 //                        addToComboBox(buttonC.getName(), reservedWordsCB);
 //                    }            
-                    Point mousePos;
-                    int currX;
-                    int currY;
-                    int newX;
-                    int newY;
-                    Robot r = null;
                     selectedCont.poll();   
                     try {
                         r = new Robot();
                     } catch (AWTException ex) {
                         Exceptions.printStackTrace(ex);
                     }
-                    while (true) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run(){
+                            while (true) {
+                                if(selectedCont.poll()){
+                                     mousePos = MouseInfo.getPointerInfo().getLocation();
+                                     currX = mousePos.x;
+                                     currY = mousePos.y;
 
-                       if(selectedCont.poll()){
-                            mousePos = MouseInfo.getPointerInfo().getLocation();
-                            currX = mousePos.x;
-                            currY = mousePos.y;
+                                     float xData = Xaxis.getPollData();
+                                     float yData = Yaxis.getPollData();
+                                     newX = (int) (xData*20) + currX;
+                                     newY = (int) (yData*20) + currY;
 
-                            float xData = Xaxis.getPollData();
-                            float yData = Yaxis.getPollData();
-                            newX = (int) (xData*20) + currX;
-                            newY = (int) (yData*20) + currY;
-                          
-                            if (buttons.get(reservedWordsCB.getSelectedItem().toString()).getPollData()==1.0 && !leftButton){
-                                leftButton = true;
-                                r.mousePress(InputEvent.BUTTON1_MASK);
-                                jTabbedPane1.setSelectedComponent(rwPane);
-                            }
-                             if (buttons.get(reservedWordsCB.getSelectedItem().toString()).getPollData()==0.0 && leftButton){                               
-                                r.mouseRelease(InputEvent.BUTTON1_MASK);
-                                leftButton = false;
-                            }
-                            if (newX != currX || newY != currY) {
-                                mouseGlide(r, currX,currY,newX,newY,10,5);
+                                     if (buttons.get(reservedWordsCB.getSelectedItem().toString()).getPollData()==1.0 && !leftButton){
+                                         leftButton = true;
+//                                         r.mousePress(InputEvent.BUTTON1_MASK);
+                                         jTabbedPane1.setSelectedComponent(rwPane);
+                                     }
+                                      if (buttons.get(reservedWordsCB.getSelectedItem().toString()).getPollData()==0.0 && leftButton){                               
+                                         r.mouseRelease(InputEvent.BUTTON1_MASK);
+                                         leftButton = false;
+                                     }
+                                     if (newX != currX || newY != currY) {
+                                         mouseGlide(r, currX,currY,newX,newY,10,5);
 
-                            }
-                         }else{
-                           break;
-                       }
-                    }
+                                     }
+                                  }else{
+                                    break;
+                                }
+                        }
+                        }
+                    }).start();
                 }
             }
         }
-    }//GEN-LAST:event_jToggleButton1MouseClicked
+    }//GEN-LAST:event_toggleJoystickMouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_refreshButtonActionPerformed
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        jComboBox1.removeAllItems();
-        jComboBox1.repaint();
+    private void refreshButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshButtonMouseClicked
+        controllerList.removeAllItems();
+        controllerList.repaint();
         reservedWordsCB.removeAllItems();
         reservedWordsCB.repaint();
         ControllerJoystick joy = new ControllerJoystick();
         newsticks = joy.getControllers();
 
         if (newsticks.isEmpty()){
-            addToComboBox("No controllers found!",jComboBox1);
+            addToComboBox("No controllers found!",controllerList);
 
         }else{
             for (Controller i : newsticks) {
-                addToComboBox(i.getName(),jComboBox1);
+                addToComboBox(i.getName(),controllerList);
             }
         }
-    }//GEN-LAST:event_jButton1MouseClicked
-  public static void mouseGlide(Robot r, int x1, int y1, int x2, int y2, int t, int n) {
+    }//GEN-LAST:event_refreshButtonMouseClicked
+    public static void mouseGlide(Robot r, int x1, int y1, int x2, int y2, int t, int n) {
       double dx = (x2 - x1) / ((double) n);
         double dy = (y2 - y1) / ((double) n);
         double dt = t / ((double) n);
@@ -1091,7 +1140,7 @@ public final class TestWindowTopComponent extends TopComponent {
         }
 }
    
-  public void recursiveSearch(String dirName){
+    public void recursiveSearch(String dirName){
         File dir = new File(dirName);
         File[] fileList =  dir.listFiles();        
         for (File file : fileList){
@@ -1102,7 +1151,7 @@ public final class TestWindowTopComponent extends TopComponent {
             }
         }
     }
-  public  void getJarContent(String jarPath) throws IOException{
+    public  void getJarContent(String jarPath) throws IOException{
 
     JarFile jar = new JarFile(jarPath);
     String entry;
@@ -1148,28 +1197,28 @@ public final class TestWindowTopComponent extends TopComponent {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox ClassCB;
     private javax.swing.JPanel calibrationPane;
+    private javax.swing.JLabel classLabel;
+    private javax.swing.JComboBox controllerList;
+    private javax.swing.JLabel controllersLabel;
     private javax.swing.JPanel editorWindow;
     protected javax.swing.JPanel editorWindowPane;
-    private javax.swing.JPanel favorites;
+    private javax.swing.JPanel favAndVarPanel;
+    private javax.swing.JLabel favoritesLabel;
     private javax.swing.JComboBox favoritesTabCB;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox6;
     private javax.swing.JInternalFrame jInternalFrame1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JComboBox leftClickCB;
+    private javax.swing.JLabel leftClickLabel;
+    private javax.swing.JButton refreshButton;
     private javax.swing.JComboBox reservedWordsCB;
+    private javax.swing.JLabel reservedWordsLabel;
     private javax.swing.JPanel rwPane;
     private javax.swing.JPanel search;
+    private javax.swing.JLabel searchLabel;
     private javax.swing.JComboBox searchTabCB;
+    private javax.swing.JToggleButton toggleJoystick;
     private javax.swing.JPanel toolbarEditorPane;
     // End of variables declaration//GEN-END:variables
 

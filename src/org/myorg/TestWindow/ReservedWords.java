@@ -28,26 +28,26 @@ class ReservedWords{
            // Location of file to read
         File file = new File(contentName+".txt");
 
-        Map<String, ArrayList<JLabel>> dict = new HashMap<String, ArrayList<JLabel>>();
+        Map<String, ArrayList<JLabel>> dict = new HashMap<>();
        
         try {
  
-            Scanner scanner = new Scanner(file).useDelimiter(";");
-            while (scanner.hasNext()) {
-                String line = scanner.next().replace("\r\n", " ").replace("\n", " ");
-                String resWords = scanner.next().replace("\r\n", " ").replace("\n", " ");
-                String test[]= resWords.split(" ");
-                ArrayList<JLabel> test2 = new ArrayList<JLabel>();
-                for(String t:test){                   
-                    if (!"".equals(t)){
-                       test2.add(new JLabel(t));
-                      
+            try (Scanner scanner = new Scanner(file).useDelimiter(";")) {
+                while (scanner.hasNext()) {
+                    String line = scanner.next().replace("\r\n", " ").replace("\n", " ");
+                    String resWords = scanner.next().replace("\r\n", " ").replace("\n", " ");
+                    String test[]= resWords.split(" ");
+                    ArrayList<JLabel> test2 = new ArrayList<>();
+                    for(String t:test){
+                        if (!"".equals(t)){
+                            test2.add(new JLabel(t));
+                            
+                        }
                     }
+                    dict.put(line, test2);
+                    
                 }
-                dict.put(line, test2);
-
             }
-            scanner.close();
         } catch (FileNotFoundException e) {
         }
         return dict;       
