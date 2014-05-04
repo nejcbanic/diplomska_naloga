@@ -109,7 +109,7 @@ public final class TestWindowTopComponent extends TopComponent {
 
     private static  MouseListener mouseListener1;
     private static  MouseListener mouseListener2;
-
+    private static  MouseListener mouseListenerRW;
     private JEditorPane jEditorPane2 = null;
     private final ReservedWords resWords;
     private final  Map<String, ArrayList<JLabel>>  f;
@@ -147,6 +147,7 @@ public final class TestWindowTopComponent extends TopComponent {
     private final UndoRedo.Manager manager = new UndoRedo.Manager();
     private JButton run;
     private Map <String, Component> buttons;
+    private volatile boolean isRunningThread = true;
     
     public TestWindowTopComponent() throws IOException, BadLocationException{
             resWords = new ReservedWords("test");
@@ -344,9 +345,8 @@ public final class TestWindowTopComponent extends TopComponent {
     
     private void reservedWords(){
 
-        f.entrySet().stream().map((entry) -> {
-            String key = entry.getKey();
-            ArrayList<JLabel> value = entry.getValue();
+        for (String key : f.keySet()){
+            ArrayList<JLabel> value = f.get(key);
             JPanel form = new JPanel();
             form.setLayout(new GridLayout(0,5));
             TitledBorder title;
@@ -356,73 +356,116 @@ public final class TestWindowTopComponent extends TopComponent {
                 test.setHorizontalAlignment(SwingConstants.CENTER);
                 test.setFont(new Font("Monospaced", Font.PLAIN, 13));
                 test.setForeground(Color.blue);
-                test.addMouseListener(mouseListener1);
+                test.addMouseListener(mouseListenerRW);
                 form.add(test);
             }
-            return form;
-        }).forEach((form) -> {
             rwPane.add(form);
-        });
+        }
     }
-    public  void initMyComp() throws IOException, BadLocationException {
-        run.addActionListener((ActionEvent e) -> {
-            OutputStream out = new OutputStream() {
-                @Override
-                public void write( int b) throws IOException {
-                    updateTextPane(String.valueOf((char) b));
-                }
-                
-                private void updateTextPane( String string) {
-                    SwingUtilities.invokeLater(() -> {
-                        Document doc = outputWindow.getDocument();
-                        try {
-                            doc.insertString(doc.getLength(), string, null);
-                        } catch (BadLocationException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                        outputWindow.setCaretPosition(doc.getLength() - 1);
-                    });
-                }
-            };
-            
-            StyledDocument doc = outputWindow.getStyledDocument();
-            PrintWriter output = null;
+    private void runCode(){
+        OutputStream out = new OutputStream() {
+            @Override
+            public void write( int b) throws IOException {
+                updateTextPane(String.valueOf((char) b));
+            }
+
+            private void updateTextPane( String string) {
+                SwingUtilities.invokeLater(() -> {
+                    Document doc = outputWindow.getDocument();
+                    try {
+                        doc.insertString(doc.getLength(), string, null);
+                    } catch (BadLocationException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    outputWindow.setCaretPosition(doc.getLength() - 1);
+                });
+            }
+        };
+
+        StyledDocument doc = outputWindow.getStyledDocument();
+        PrintWriter output = null;
+        try {
+            output = new PrintWriter(jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]+".java");
+        } catch (FileNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        output.println(jEditorPane2.getText());
+        output.close();
+        String fileToCompile =jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]+".java";
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        int compilationResult = compiler.run(null, null, out, fileToCompile);
+
+        if(compilationResult == 0){
             try {
-                output = new PrintWriter(jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]+".java");
-            } catch (FileNotFoundException ex) {
+                Process p = Runtime.getRuntime().exec("java "+jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]);
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(p.getInputStream()));
+                String line;
+                while ((line = in.readLine()) != null) {
+                    try {
+                        doc.insertString(doc.getLength(), line+"\n",null );
+                    } catch (BadLocationException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            } catch (IOException ex) {                  
+            }
+        }else{
+            try {
+                doc.insertString(doc.getLength(), "Compilation was not successful\n",null );
+
+            } catch (BadLocationException ex) {
                 Exceptions.printStackTrace(ex);
             }
-            output.println(jEditorPane2.getText());
-            output.close();
-            String fileToCompile =jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]+".java";
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            int compilationResult = compiler.run(null, null, out, fileToCompile);
-            
-            if(compilationResult == 0){
-                try {
-                    Process p = Runtime.getRuntime().exec("java "+jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]);
-                    BufferedReader in = new BufferedReader(
-                            new InputStreamReader(p.getInputStream()));
-                    String line;
-                    while ((line = in.readLine()) != null) {
-                        try {
-                            doc.insertString(doc.getLength(), line+"\n",null );
-                        } catch (BadLocationException ex) {
-                            Exceptions.printStackTrace(ex);
-                        }
-                    }
-                } catch (IOException ex) {                  
-                }
-            }else{
-                try {
-                    doc.insertString(doc.getLength(), "Compilation was not successful\n",null );
-                    
-                } catch (BadLocationException ex) {
-                    Exceptions.printStackTrace(ex);
-                }
-            }
+        }
+    }
+    
+    public void refreshComboBoxes(){
+        reservedWordsCB.removeAllItems();
+        reservedWordsCB.repaint();
+        runCodeCB.removeAllItems();
+        runCodeCB.repaint();
+        leftClickCB.removeAllItems();
+        leftClickCB.repaint();
+        searchTabCB.removeAllItems();
+        searchTabCB.repaint();
+        favoritesTabCB.removeAllItems();
+        favoritesTabCB.repaint();
+    }
+    public void initMyComp() throws IOException, BadLocationException {
+        run.addActionListener((ActionEvent e) -> {
+            runCode();
         });
+    mouseListenerRW = new MouseAdapter(){
+        @Override
+        public void mouseClicked(MouseEvent e){ 
+            JLabel jc = (JLabel)e.getSource();
+            int caretPos = jEditorPane2.getCaretPosition();      
+            try {
+                jEditorPane2.getDocument().insertString(caretPos, jc.getText(), null);
+            } catch (BadLocationException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        @Override
+        public void mouseEntered(MouseEvent e){
+            Object source = e.getSource();
+            if (source instanceof JLabel){
+                JLabel test = (JLabel)source;
+                test.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        }
+        @Override
+        public void mouseExited(MouseEvent e){
+            Object source = e.getSource();
+            if (source instanceof JLabel){
+                JLabel test = (JLabel)source;
+
+                test.setBorder(null);
+            }
+        }
         
+    };    
     mouseListener1 = new MouseAdapter(){
         @Override
         public void mouseClicked(MouseEvent e){
@@ -590,10 +633,12 @@ public final class TestWindowTopComponent extends TopComponent {
         if(ev.getStateChange()==ItemEvent.SELECTED){
             toggleJoystick.setText("Stop");
             toggleJoystick.setForeground(Color.red);
-
+            isRunningThread = true;
+           
         } else if(ev.getStateChange()==ItemEvent.DESELECTED){
             toggleJoystick.setText("Start");
             toggleJoystick.setForeground(Color.blue);
+            isRunningThread = false;
         }
     });
           
@@ -604,34 +649,33 @@ public final class TestWindowTopComponent extends TopComponent {
                 String item = (String)e.getItem();
                 
                 if (e.getStateChange() == ItemEvent.SELECTED)
-                {System.out.println(item);
+                {
                    ArrayList <Component> buttons= new ArrayList<>();
-                   reservedWordsCB.removeAll();
-                   reservedWordsCB.repaint();
-                   
+                   refreshComboBoxes();
                    for (Controller selectedCont: newsticks){
-                    if(selectedCont.getName().equals(item)){
+                        if(selectedCont.getName().equals(item)){
 
-                        try{
-                            components = selectedCont.getComponents();
+                            try{
+                                components = selectedCont.getComponents();
+                            }
+                            catch(NullPointerException ex){
+                                System.exit(1);
+                            }
+                            for (Component component : components) {
+                                if(component.getName().contains("Button")){
+                                    buttons.add(component);
+                                }                       
+                            }           
                         }
-                        catch(NullPointerException ex){
-                            System.exit(1);
-                        }
-
-                        for (Component component : components) {
-
-                            if(component.getName().contains("Button")){
-                                buttons.add(component);
-                            }                       
-
-                        }
-                        for (Component buttonC:buttons){
-                            addToComboBox(buttonC.getName(), reservedWordsCB);
-                            System.out.println(buttonC.getName());
-                        }            
                     }
-                   }
+                    for (Component buttonC:buttons){
+                        String buttonName = buttonC.getName();
+                        addToComboBox(buttonName, leftClickCB);
+                        addToComboBox(buttonName, runCodeCB);
+                        addToComboBox(buttonName, reservedWordsCB);
+                        addToComboBox(buttonName, searchTabCB);
+                        addToComboBox(buttonName, favoritesTabCB);
+                    } 
                 }
                 else
                 {
@@ -789,8 +833,6 @@ public final class TestWindowTopComponent extends TopComponent {
             } catch (BadLocationException | ClassNotFoundException ex) {
                 Exceptions.printStackTrace(ex);
             }
-
-
         }
         @Override
         public void mouseEntered(MouseEvent e){
@@ -805,7 +847,6 @@ public final class TestWindowTopComponent extends TopComponent {
             Object source = e.getSource();
             if (source instanceof JLabel){
                 JLabel test = (JLabel)source;
-
                 test.setBorder(null);
             }
         }  
@@ -850,14 +891,14 @@ public final class TestWindowTopComponent extends TopComponent {
         controllerList = new javax.swing.JComboBox();
         leftClickLabel = new javax.swing.JLabel();
         leftClickCB = new javax.swing.JComboBox();
+        runCodeLabel = new javax.swing.JLabel();
+        runCodeCB = new javax.swing.JComboBox();
         reservedWordsLabel = new javax.swing.JLabel();
         reservedWordsCB = new javax.swing.JComboBox();
-        classLabel = new javax.swing.JLabel();
-        ClassCB = new javax.swing.JComboBox();
-        searchLabel = new javax.swing.JLabel();
-        searchTabCB = new javax.swing.JComboBox();
         favoritesLabel = new javax.swing.JLabel();
         favoritesTabCB = new javax.swing.JComboBox();
+        searchLabel = new javax.swing.JLabel();
+        searchTabCB = new javax.swing.JComboBox();
         jPanel1 = new javax.swing.JPanel();
         toggleJoystick = new javax.swing.JToggleButton();
         refreshButton = new javax.swing.JButton();
@@ -888,7 +929,7 @@ public final class TestWindowTopComponent extends TopComponent {
         calibrationPane.setLayout(new java.awt.GridLayout(0, 1));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jPanel2.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 153))); // NOI18N
-        jPanel2.setLayout(new java.awt.GridLayout(6, 2));
+        jPanel2.setLayout(new java.awt.GridLayout(7, 2));
 
         controllersLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(controllersLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.controllersLabel.text")); // NOI18N
@@ -908,31 +949,27 @@ public final class TestWindowTopComponent extends TopComponent {
 
         jPanel2.add(leftClickCB);
 
+        org.openide.awt.Mnemonics.setLocalizedText(runCodeLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.runCodeLabel.text")); // NOI18N
+        jPanel2.add(runCodeLabel);
+
+        jPanel2.add(runCodeCB);
+
         org.openide.awt.Mnemonics.setLocalizedText(reservedWordsLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.reservedWordsLabel.text")); // NOI18N
         jPanel2.add(reservedWordsLabel);
 
         jPanel2.add(reservedWordsCB);
 
-        org.openide.awt.Mnemonics.setLocalizedText(classLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.classLabel.text")); // NOI18N
-        jPanel2.add(classLabel);
+        org.openide.awt.Mnemonics.setLocalizedText(favoritesLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.favoritesLabel.text")); // NOI18N
+        jPanel2.add(favoritesLabel);
 
-        ClassCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        ClassCB.setSelectedIndex(-1);
-        jPanel2.add(ClassCB);
+        favoritesTabCB.setSelectedIndex(-1);
+        jPanel2.add(favoritesTabCB);
 
         org.openide.awt.Mnemonics.setLocalizedText(searchLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.searchLabel.text")); // NOI18N
         jPanel2.add(searchLabel);
 
-        searchTabCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         searchTabCB.setSelectedIndex(-1);
         jPanel2.add(searchTabCB);
-
-        org.openide.awt.Mnemonics.setLocalizedText(favoritesLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.favoritesLabel.text")); // NOI18N
-        jPanel2.add(favoritesLabel);
-
-        favoritesTabCB.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        favoritesTabCB.setSelectedIndex(-1);
-        jPanel2.add(favoritesTabCB);
 
         calibrationPane.add(jPanel2);
         jPanel2.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jPanel2.AccessibleContext.accessibleName")); // NOI18N
@@ -1039,8 +1076,7 @@ public final class TestWindowTopComponent extends TopComponent {
             String t = controllerList.getSelectedItem().toString();
            
             for (Controller selectedCont: newsticks){
-                if(selectedCont.getName().equals(t)){
-                    
+                if(selectedCont.getName().equals(t)){                   
                     try{
                         components = selectedCont.getComponents();
                     }
@@ -1048,11 +1084,11 @@ public final class TestWindowTopComponent extends TopComponent {
                         System.exit(1);
                     }
                    
-                   Xaxis = components[1];
-                   Yaxis = components[2];
-                   buttons= new HashMap<>();
+                    Xaxis = components[1];
+                    Yaxis = components[2];
+                    buttons= new HashMap<>();
                     for (Component component : components) {
-       
+
                         if (component.getName().equalsIgnoreCase("x axis") && component.isAnalog()) {
                             Xaxis = component;
                         }else if (component.getName().equalsIgnoreCase("y axis") && component.isAnalog()) {
@@ -1065,7 +1101,7 @@ public final class TestWindowTopComponent extends TopComponent {
 //                    for (Component buttonC:buttons){
 //                        addToComboBox(buttonC.getName(), reservedWordsCB);
 //                    }            
-                    selectedCont.poll();   
+
                     try {
                         r = new Robot();
                     } catch (AWTException ex) {
@@ -1074,7 +1110,7 @@ public final class TestWindowTopComponent extends TopComponent {
                     new Thread(new Runnable() {
                         @Override
                         public void run(){
-                            while (true) {
+                            while (isRunningThread) {
                                 if(selectedCont.poll()){
                                      mousePos = MouseInfo.getPointerInfo().getLocation();
                                      currX = mousePos.x;
@@ -1085,21 +1121,36 @@ public final class TestWindowTopComponent extends TopComponent {
                                      newX = (int) (xData*20) + currX;
                                      newY = (int) (yData*20) + currY;
 
-                                     if (buttons.get(reservedWordsCB.getSelectedItem().toString()).getPollData()==1.0 && !leftButton){
-                                         leftButton = true;
-//                                         r.mousePress(InputEvent.BUTTON1_MASK);
+                                     if (buttons.get(reservedWordsCB.getSelectedItem().toString()).getPollData()==1.0){
                                          jTabbedPane1.setSelectedComponent(rwPane);
+                                         rwPane.removeAll();
+                                         rwPane.repaint();
+                                         reservedWords();
                                      }
-                                      if (buttons.get(reservedWordsCB.getSelectedItem().toString()).getPollData()==0.0 && leftButton){                               
+                                     if (buttons.get(leftClickCB.getSelectedItem().toString()).getPollData()==1.0 && !leftButton){
+                                         leftButton = true;
+                                         r.mousePress(InputEvent.BUTTON1_MASK);
+                                     }
+                                     if (buttons.get(leftClickCB.getSelectedItem().toString()).getPollData()==0.0 && leftButton){                               
                                          r.mouseRelease(InputEvent.BUTTON1_MASK);
                                          leftButton = false;
                                      }
+                                     if (buttons.get(favoritesTabCB.getSelectedItem().toString()).getPollData()==1.0){
+                                         jTabbedPane1.setSelectedIndex(2);
+                                     }
+                                     
+                                     if (buttons.get(runCodeCB.getSelectedItem().toString()).getPollData()==1.0){
+                                         runCode();
+                                     }
+                                     if (buttons.get(searchTabCB.getSelectedItem().toString()).getPollData()==1.0){
+                                         jTabbedPane1.setSelectedIndex(3);
+                                     }
                                      if (newX != currX || newY != currY) {
                                          mouseGlide(r, currX,currY,newX,newY,10,5);
-
                                      }
+
                                   }else{
-                                    break;
+                                    isRunningThread = false;
                                 }
                         }
                         }
@@ -1116,8 +1167,7 @@ public final class TestWindowTopComponent extends TopComponent {
     private void refreshButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_refreshButtonMouseClicked
         controllerList.removeAllItems();
         controllerList.repaint();
-        reservedWordsCB.removeAllItems();
-        reservedWordsCB.repaint();
+        refreshComboBoxes();
         ControllerJoystick joy = new ControllerJoystick();
         newsticks = joy.getControllers();
 
@@ -1126,7 +1176,7 @@ public final class TestWindowTopComponent extends TopComponent {
 
         }else{
             for (Controller i : newsticks) {
-                addToComboBox(i.getName(),controllerList);
+                addToComboBox(i.getName(), controllerList);
             }
         }
     }//GEN-LAST:event_refreshButtonMouseClicked
@@ -1195,9 +1245,7 @@ public final class TestWindowTopComponent extends TopComponent {
   }
  
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox ClassCB;
     private javax.swing.JPanel calibrationPane;
-    private javax.swing.JLabel classLabel;
     private javax.swing.JComboBox controllerList;
     private javax.swing.JLabel controllersLabel;
     private javax.swing.JPanel editorWindow;
@@ -1214,6 +1262,8 @@ public final class TestWindowTopComponent extends TopComponent {
     private javax.swing.JButton refreshButton;
     private javax.swing.JComboBox reservedWordsCB;
     private javax.swing.JLabel reservedWordsLabel;
+    private javax.swing.JComboBox runCodeCB;
+    private javax.swing.JLabel runCodeLabel;
     private javax.swing.JPanel rwPane;
     private javax.swing.JPanel search;
     private javax.swing.JLabel searchLabel;
