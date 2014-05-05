@@ -34,6 +34,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -109,7 +111,7 @@ public final class TestWindowTopComponent extends TopComponent {
 
     private static  MouseListener mouseListener1;
     private static  MouseListener mouseListener2;
-    private static  MouseListener mouseListenerRW;
+    private static  MouseListener mouseListenerMethods;
     private JEditorPane jEditorPane2 = null;
     private final ReservedWords resWords;
     private final  Map<String, ArrayList<JLabel>>  f;
@@ -117,9 +119,9 @@ public final class TestWindowTopComponent extends TopComponent {
     private final   Set<File> content  = new HashSet<>();
     private final   Map<String, ArrayList<String>> classFinal = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final  Map<String, ArrayList<String>> packageFinal = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private static final  String[][] favoritesAndVariables = {{"java.lang.String","java.lang.System","java.lang.Exception"
+    private static final  String[][] favoritesAndVariables = {{"java.lang.String","java.lang.System","java.lang.Integer"
                                                ,"java.util.ArrayList","java.util.HashMap","java.lang.Object"
-                                               ,"java.lang.Thread","java.lang.Class","java.util.Date","java.util.Iterator"},
+                                               ,"java.lang.Math","java.lang.Class","java.util.Date","java.util.Iterator"},
                                             {"i","j","k","l","m","n","o","p"}};
 
     private static final Map<String, ArrayList<String>> classFavAndVar = new HashMap<>();
@@ -142,6 +144,7 @@ public final class TestWindowTopComponent extends TopComponent {
     private int newX;
     private int newY;
     private Robot r;
+    private boolean codeComplete = false;
     private Component Xaxis;
     private Component Yaxis;
     private final UndoRedo.Manager manager = new UndoRedo.Manager();
@@ -335,7 +338,7 @@ public final class TestWindowTopComponent extends TopComponent {
             methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
             methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
             methodLabel.setForeground(Color.blue); 
-            methodLabel.addMouseListener(mouseListener1);
+            methodLabel.addMouseListener(mouseListenerMethods);
             form.add(methodLabel);
      
         }
@@ -356,17 +359,18 @@ public final class TestWindowTopComponent extends TopComponent {
                 test.setHorizontalAlignment(SwingConstants.CENTER);
                 test.setFont(new Font("Monospaced", Font.PLAIN, 13));
                 test.setForeground(Color.blue);
-                test.addMouseListener(mouseListenerRW);
+                test.addMouseListener(mouseListener1);
                 form.add(test);
             }
             rwPane.add(form);
         }
     }
-    private void runCode(){
+    private int compileCode() throws IOException{
         OutputStream out = new OutputStream() {
             @Override
             public void write( int b) throws IOException {
-                updateTextPane(String.valueOf((char) b));
+                if (!codeComplete)
+                    updateTextPane(String.valueOf((char) b));
             }
 
             private void updateTextPane( String string) {
@@ -382,7 +386,6 @@ public final class TestWindowTopComponent extends TopComponent {
             }
         };
 
-        StyledDocument doc = outputWindow.getStyledDocument();
         PrintWriter output = null;
         try {
             output = new PrintWriter(jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]+".java");
@@ -393,9 +396,14 @@ public final class TestWindowTopComponent extends TopComponent {
         output.close();
         String fileToCompile =jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]+".java";
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        int compilationResult = compiler.run(null, null, out, fileToCompile);
+        int compileRes = compiler.run(null, null, out, fileToCompile);
+        out.close();
+        return compileRes;
+    }
+    private void runCode() throws IOException{
 
-        if(compilationResult == 0){
+        StyledDocument doc = outputWindow.getStyledDocument();
+        if(compileCode()== 0){
             try {
                 Process p = Runtime.getRuntime().exec("java "+jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1]);
                 BufferedReader in = new BufferedReader(
@@ -431,18 +439,36 @@ public final class TestWindowTopComponent extends TopComponent {
         searchTabCB.repaint();
         favoritesTabCB.removeAllItems();
         favoritesTabCB.repaint();
+        classCB.removeAllItems();
+        classCB.repaint();
     }
-    public void initMyComp() throws IOException, BadLocationException {
+    public void initMyComp()  {
         run.addActionListener((ActionEvent e) -> {
-            runCode();
+            try {
+                runCode();
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         });
-    mouseListenerRW = new MouseAdapter(){
+    mouseListenerMethods = new MouseAdapter(){
         @Override
         public void mouseClicked(MouseEvent e){ 
             JLabel jc = (JLabel)e.getSource();
             int caretPos = jEditorPane2.getCaretPosition();      
             try {
-                jEditorPane2.getDocument().insertString(caretPos, jc.getText(), null);
+                          
+                String fin = jc.getText()+" ("; 
+                    if (jc.getToolTipText().contains("Parameters:")){
+                        List<String> par= Arrays.asList( jc.getToolTipText().replaceAll("^.*?<li>", "").split("</li>.*?(<li>|$)"));
+                        if (!par.isEmpty()){
+                            for (String par_f:par)
+                                fin+=" ,";
+                        }
+                        fin = fin.substring(0, fin.lastIndexOf(",") - 1)+" )";
+                    }else
+                       fin+=")" ;
+                jEditorPane2.getDocument().insertString(caretPos, fin, null);
+
             } catch (BadLocationException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -472,33 +498,24 @@ public final class TestWindowTopComponent extends TopComponent {
             Object source = e.getSource();
             if (source instanceof JLabel){
                 JLabel jc = (JLabel)e.getSource();
-                 int caretPos = jEditorPane2.getCaretPosition();
-                 
+                 int caretPos = jEditorPane2.getCaretPosition();   
+                   
                  try {
                      if ("main".equals(jc.getText())){
                          jEditorPane2.getDocument().insertString(caretPos, "public static void main (String[]args){\n}", null);
                      }else if("try".equals(jc.getText())){
                          jEditorPane2.getDocument().insertString(caretPos, "try{\n\n}catch( ){}", null);
                          Rectangle rectangle = jEditorPane2.modelToView( jEditorPane2.getCaretPosition() );
-                         System.out.println(rectangle+" "+caretPos);
-                         rwPane.removeAll();
-                         rwPane.repaint();
-                         rwPane.add(returnExceptions());
-                     }else if(jc.getToolTipText().length() > 0 ){
-                        String fin = jc.getText()+" ("; 
-                            if (jc.getToolTipText().contains("Parameters:")){
-                                List<String> par= Arrays.asList( jc.getToolTipText().replaceAll("^.*?<li>", "").split("</li>.*?(<li>|$)"));
-                                if (!par.isEmpty()){
-                                    for (String par_f:par)
-                                        fin+=" ,";
-                                }
-                                fin = fin.substring(0, fin.lastIndexOf(",") - 1)+" )";
-                            }else
-                               fin+=")" ;
-                        jEditorPane2.getDocument().insertString(caretPos, fin, null);
-                     }else
-                        jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
-                 } catch(BadLocationException | NullPointerException ex) {
+                         jTabbedPane1.setSelectedIndex(3);
+                     }else{
+                        if (jc.getText().contains("\\.")){
+                            jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
+                        }else{
+                             
+                            jEditorPane2.getDocument().insertString(caretPos, jc.getText() + " ", null);
+                        }    
+                     }
+                 } catch(BadLocationException ex) {
                  }                
             }else if(source instanceof JButton){
                  JButton jc = (JButton)e.getSource();
@@ -576,8 +593,6 @@ public final class TestWindowTopComponent extends TopComponent {
             } 
         }
 
-        @Override
-        public void removeUpdate(DocumentEvent arg0){ }
         @SuppressWarnings("null")
         public void update(DocumentEvent e) throws BadLocationException, Exception{
 
@@ -585,15 +600,19 @@ public final class TestWindowTopComponent extends TopComponent {
             String output  = doc.getText(0, jEditorPane2.getCaretPosition());           
 
             if (period){
-
-               try{                       
-                    output = output.substring(output.lastIndexOf("\n")+1);
-                    output = output.substring(output.lastIndexOf(" ")+1);
-                    output = output.trim();
-                    Class newClass;
-                    String test = output.split("\\.")[0];
-                    ArrayList<String> temp = classFinal.get(test);
-                    if (temp!= null){
+                codeComplete = false;                    
+                output = output.substring(output.lastIndexOf("\n")+1);
+                output = output.substring(output.lastIndexOf(" ")+1);
+                output = output.trim();
+                Class newClass;
+                String test = null;
+                ArrayList<String> temp = null;
+                if (!output.equals(".")){
+                    test = output.split("\\.")[0];
+                    temp  = classFinal.get(test);
+                }
+                if (temp!= null){
+                    try{  
 //                            popupPackage = null;
 //                            if(temp.size()>1){
 //                                Rectangle rectangle = jEditorPane2.modelToView( jEditorPane2.getCaretPosition());
@@ -607,27 +626,65 @@ public final class TestWindowTopComponent extends TopComponent {
 //                                 popupPackage.show(jEditorPane2, rectangle.x, rectangle.y + rectangle.height);
 //                            }else{
                             newClass = Class.forName(temp.get(0));
-                            for (String s:output.split("\\."))
-                                System.out.println(s+" " +output.split("\\.").length);
                             if (output.split("\\.").length > 1){
-                                newClass = Class.forName(newClass.getField(output.split("\\.")[1]).getType().getCanonicalName());
-
+                                newClass = Class.forName(newClass.getField(output.split("\\.")[output.split("\\.").length -1]).getType().getCanonicalName());
                             }
 
 //                            }
-                        rwPane.removeAll();
-                        rwPane.repaint();
 
-                        if (newClass.getFields().length !=0)
-                            rwPane.add(returnPanelFields(newClass));
-                        if (newClass.getDeclaredMethods().length !=0)
-                            rwPane.add(returnPanelMethods(newClass));
+                        classResultsPanel.removeAll();
+                        classResultsPanel.repaint();
+                        if (newClass.getFields().length !=0){
+                            classResultsPanel.add(returnPanelFields(newClass));
+                            jTabbedPane1.setSelectedIndex(4);
+                        }
+                        if (newClass.getDeclaredMethods().length !=0){
+                            classResultsPanel.add(returnPanelMethods(newClass));
+                            jTabbedPane1.setSelectedIndex(4);
+                        }
+                    }catch( ArrayIndexOutOfBoundsException | NullPointerException | ClassNotFoundException | NoSuchFieldException exp){
 
                     }
-               }catch( ArrayIndexOutOfBoundsException | NullPointerException | ClassNotFoundException | NoSuchFieldException exp){
-               }
+                }else{
+                  
+                    codeComplete = true;
+                    File root = new File(".");
+                    URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
+                    
+
+                   if(compileCode()== 0){
+                        classResultsPanel.removeAll();
+                        classResultsPanel.repaint();
+                        String className = jEditorPane2.getText().split("class")[1].split("[^a-zA-Z0-9']+")[1];
+                        if (Class.forName(className, true, classLoader).getFields().length !=0){
+                            classResultsPanel.add(returnPanelFields(Class.forName(className, true, classLoader)));
+                            jTabbedPane1.setSelectedIndex(4);
+                        }
+                        if (Class.forName(className, true, classLoader).getDeclaredMethods().length !=0){
+                            classResultsPanel.add(returnPanelMethods(Class.forName(className, true, classLoader)));
+                            jTabbedPane1.setSelectedIndex(4);
+                        }
+                   }else{
+                           classResultsPanel.removeAll();
+                           classResultsPanel.repaint();
+                           classResultsPanel.add(new JLabel ("Compilation was not successful!"));
+                           jTabbedPane1.setSelectedIndex(4);
+
+                   }                       
+                }
             }
         }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                          try {
+                            update(de);
+                        } catch (BadLocationException ex) {
+                            Exceptions.printStackTrace(ex);
+                        } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
+            }
+            }
     });
     toggleJoystick.addItemListener((ItemEvent ev) -> {
         if(ev.getStateChange()==ItemEvent.SELECTED){
@@ -675,6 +732,7 @@ public final class TestWindowTopComponent extends TopComponent {
                         addToComboBox(buttonName, reservedWordsCB);
                         addToComboBox(buttonName, searchTabCB);
                         addToComboBox(buttonName, favoritesTabCB);
+                        addToComboBox(buttonName, classCB);
                     } 
                 }
                 else
@@ -822,14 +880,13 @@ public final class TestWindowTopComponent extends TopComponent {
             
             try {
                 jEditorPane2.getDocument().insertString(caretPos, className+".", null);
-                rwPane.removeAll();
-                rwPane.repaint();
-                
+                classResultsPanel.removeAll();
+                classResultsPanel.repaint();
                 if (Class.forName(jc.getText()).getFields().length !=0)
-                    rwPane.add(returnPanelFields(Class.forName(jc.getText())));
+                    classResultsPanel.add(returnPanelFields(Class.forName(jc.getText())));
                 if (Class.forName(jc.getText()).getDeclaredMethods().length !=0)
-                    rwPane.add(returnPanelMethods(Class.forName(jc.getText())));
-                jTabbedPane1.setSelectedIndex(0);
+                    classResultsPanel.add(returnPanelMethods(Class.forName(jc.getText())));
+                jTabbedPane1.setSelectedIndex(4);
             } catch (BadLocationException | ClassNotFoundException ex) {
                 Exceptions.printStackTrace(ex);
             }
@@ -850,11 +907,14 @@ public final class TestWindowTopComponent extends TopComponent {
                 test.setBorder(null);
             }
         }  
-     };   
-    favAndVarPanel.add(returnPanelFavorites());
-    favAndVarPanel.add(returnPanelVariables());
-    reservedWords();
-
+     };
+    JPanel fanAndVar = new JPanel();
+    fanAndVar.setLayout(new GridLayout(0,2));
+    fanAndVar.add(returnPanelFavorites());
+    fanAndVar.add(returnPanelVariables());
+    favAndVarPanel.add(fanAndVar);
+    favAndVarPanel.add(returnExceptions());
+    reservedWords();  
   }
    
     public static boolean isClass(String className){
@@ -862,11 +922,11 @@ public final class TestWindowTopComponent extends TopComponent {
         boolean exist = true;
         try 
         {
-            if(Modifier.isPublic(Class.forName(className).getModifiers())){
+            if(Modifier.isPublic(Class.forName(className).getModifiers()) && Class.forName(className).getMethods().length > 0){
                 exist = true;
             }
         } 
-        catch (Exception | Error e) 
+        catch (NoClassDefFoundError | NoSuchMethodError | ClassNotFoundException ex) 
         {
             exist = false;
         }
@@ -884,9 +944,8 @@ public final class TestWindowTopComponent extends TopComponent {
 
         jInternalFrame1 = new javax.swing.JInternalFrame();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        rwPane = new javax.swing.JPanel();
         calibrationPane = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        calibrationPanel = new javax.swing.JPanel();
         controllersLabel = new javax.swing.JLabel();
         controllerList = new javax.swing.JComboBox();
         leftClickLabel = new javax.swing.JLabel();
@@ -899,11 +958,15 @@ public final class TestWindowTopComponent extends TopComponent {
         favoritesTabCB = new javax.swing.JComboBox();
         searchLabel = new javax.swing.JLabel();
         searchTabCB = new javax.swing.JComboBox();
-        jPanel1 = new javax.swing.JPanel();
+        classLabel = new javax.swing.JLabel();
+        classCB = new javax.swing.JComboBox();
+        runJoystickPanel = new javax.swing.JPanel();
         toggleJoystick = new javax.swing.JToggleButton();
         refreshButton = new javax.swing.JButton();
-        favAndVarPanel = new javax.swing.JPanel();
+        rwPane = new javax.swing.JPanel();
         search = new javax.swing.JPanel();
+        favAndVarPanel = new javax.swing.JPanel();
+        classResultsPanel = new javax.swing.JPanel();
         editorWindowPane = new javax.swing.JPanel();
         toolbarEditorPane = new javax.swing.JPanel();
         editorWindow = new javax.swing.JPanel();
@@ -921,19 +984,14 @@ public final class TestWindowTopComponent extends TopComponent {
         jTabbedPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jTabbedPane1.setMaximumSize(new java.awt.Dimension(94, 85));
 
-        rwPane.setBackground(new java.awt.Color(255, 255, 255));
-        rwPane.setCursor(new java.awt.Cursor(java.awt.Cursor.MOVE_CURSOR));
-        rwPane.setLayout(new java.awt.GridLayout(0, 1));
-        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.rwPane.TabConstraints.tabTitle"), rwPane); // NOI18N
-
         calibrationPane.setLayout(new java.awt.GridLayout(0, 1));
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jPanel2.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 153))); // NOI18N
-        jPanel2.setLayout(new java.awt.GridLayout(7, 2));
+        calibrationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.calibrationPanel.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(0, 0, 153))); // NOI18N
+        calibrationPanel.setLayout(new java.awt.GridLayout(7, 2));
 
         controllersLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(controllersLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.controllersLabel.text")); // NOI18N
-        jPanel2.add(controllersLabel);
+        calibrationPanel.add(controllersLabel);
 
         controllerList.setMinimumSize(new java.awt.Dimension(100, 100));
         controllerList.addActionListener(new java.awt.event.ActionListener() {
@@ -941,41 +999,44 @@ public final class TestWindowTopComponent extends TopComponent {
                 controllerListActionPerformed(evt);
             }
         });
-        jPanel2.add(controllerList);
+        calibrationPanel.add(controllerList);
         controllerList.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.controllerList.AccessibleContext.accessibleName")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(leftClickLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.leftClickLabel.text")); // NOI18N
-        jPanel2.add(leftClickLabel);
+        calibrationPanel.add(leftClickLabel);
 
-        jPanel2.add(leftClickCB);
+        calibrationPanel.add(leftClickCB);
 
         org.openide.awt.Mnemonics.setLocalizedText(runCodeLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.runCodeLabel.text")); // NOI18N
-        jPanel2.add(runCodeLabel);
+        calibrationPanel.add(runCodeLabel);
 
-        jPanel2.add(runCodeCB);
+        calibrationPanel.add(runCodeCB);
 
         org.openide.awt.Mnemonics.setLocalizedText(reservedWordsLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.reservedWordsLabel.text")); // NOI18N
-        jPanel2.add(reservedWordsLabel);
+        calibrationPanel.add(reservedWordsLabel);
 
-        jPanel2.add(reservedWordsCB);
+        calibrationPanel.add(reservedWordsCB);
 
         org.openide.awt.Mnemonics.setLocalizedText(favoritesLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.favoritesLabel.text")); // NOI18N
-        jPanel2.add(favoritesLabel);
+        calibrationPanel.add(favoritesLabel);
 
-        favoritesTabCB.setSelectedIndex(-1);
-        jPanel2.add(favoritesTabCB);
+        calibrationPanel.add(favoritesTabCB);
 
         org.openide.awt.Mnemonics.setLocalizedText(searchLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.searchLabel.text")); // NOI18N
-        jPanel2.add(searchLabel);
+        calibrationPanel.add(searchLabel);
 
-        searchTabCB.setSelectedIndex(-1);
-        jPanel2.add(searchTabCB);
+        calibrationPanel.add(searchTabCB);
 
-        calibrationPane.add(jPanel2);
-        jPanel2.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jPanel2.AccessibleContext.accessibleName")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(classLabel, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.classLabel.text")); // NOI18N
+        calibrationPanel.add(classLabel);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("")));
-        jPanel1.setLayout(new java.awt.GridBagLayout());
+        calibrationPanel.add(classCB);
+
+        calibrationPane.add(calibrationPanel);
+        calibrationPanel.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.calibrationPanel.AccessibleContext.accessibleName")); // NOI18N
+
+        runJoystickPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("")));
+        runJoystickPanel.setLayout(new java.awt.GridBagLayout());
 
         toggleJoystick.setForeground(new java.awt.Color(0, 0, 204));
         org.openide.awt.Mnemonics.setLocalizedText(toggleJoystick, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.toggleJoystick.text")); // NOI18N
@@ -997,7 +1058,7 @@ public final class TestWindowTopComponent extends TopComponent {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LAST_LINE_START;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
-        jPanel1.add(toggleJoystick, gridBagConstraints);
+        runJoystickPanel.add(toggleJoystick, gridBagConstraints);
 
         refreshButton.setForeground(new java.awt.Color(0, 204, 51));
         org.openide.awt.Mnemonics.setLocalizedText(refreshButton, org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.refreshButton.text")); // NOI18N
@@ -1019,17 +1080,25 @@ public final class TestWindowTopComponent extends TopComponent {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
-        jPanel1.add(refreshButton, gridBagConstraints);
+        runJoystickPanel.add(refreshButton, gridBagConstraints);
 
-        calibrationPane.add(jPanel1);
+        calibrationPane.add(runJoystickPanel);
 
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.calibrationPane.TabConstraints.tabTitle"), calibrationPane); // NOI18N
+
+        rwPane.setBackground(new java.awt.Color(255, 255, 255));
+        rwPane.setCursor(new java.awt.Cursor(java.awt.Cursor.MOVE_CURSOR));
+        rwPane.setLayout(new java.awt.GridLayout(0, 1));
+        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.rwPane.TabConstraints.tabTitle"), rwPane); // NOI18N
+
+        search.setLayout(new java.awt.GridLayout(2, 1));
+        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.search.TabConstraints.tabTitle"), search); // NOI18N
 
         favAndVarPanel.setLayout(new java.awt.GridLayout(2, 1));
         jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.favAndVarPanel.TabConstraints.tabTitle"), favAndVarPanel); // NOI18N
 
-        search.setLayout(new java.awt.GridLayout(2, 1));
-        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.search.TabConstraints.tabTitle"), search); // NOI18N
+        classResultsPanel.setLayout(new java.awt.GridLayout(2, 1));
+        jTabbedPane1.addTab(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.classResultsPanel.TabConstraints.tabTitle"), classResultsPanel); // NOI18N
 
         jInternalFrame1.getContentPane().add(jTabbedPane1);
         jTabbedPane1.getAccessibleContext().setAccessibleName(org.openide.util.NbBundle.getMessage(TestWindowTopComponent.class, "TestWindowTopComponent.jTabbedPane1.AccessibleContext.accessibleName")); // NOI18N
@@ -1123,8 +1192,6 @@ public final class TestWindowTopComponent extends TopComponent {
 
                                      if (buttons.get(reservedWordsCB.getSelectedItem().toString()).getPollData()==1.0){
                                          jTabbedPane1.setSelectedComponent(rwPane);
-                                         rwPane.removeAll();
-                                         rwPane.repaint();
                                          reservedWords();
                                      }
                                      if (buttons.get(leftClickCB.getSelectedItem().toString()).getPollData()==1.0 && !leftButton){
@@ -1136,14 +1203,20 @@ public final class TestWindowTopComponent extends TopComponent {
                                          leftButton = false;
                                      }
                                      if (buttons.get(favoritesTabCB.getSelectedItem().toString()).getPollData()==1.0){
-                                         jTabbedPane1.setSelectedIndex(2);
+                                         jTabbedPane1.setSelectedIndex(3);
                                      }
-                                     
+                                     if (buttons.get(classCB.getSelectedItem().toString()).getPollData()==1.0){
+                                         jTabbedPane1.setSelectedIndex(4);
+                                     }
                                      if (buttons.get(runCodeCB.getSelectedItem().toString()).getPollData()==1.0){
-                                         runCode();
+                                         try {
+                                             runCode();
+                                         } catch (IOException ex) {
+                                             Exceptions.printStackTrace(ex);
+                                         }
                                      }
                                      if (buttons.get(searchTabCB.getSelectedItem().toString()).getPollData()==1.0){
-                                         jTabbedPane1.setSelectedIndex(3);
+                                         jTabbedPane1.setSelectedIndex(2);
                                      }
                                      if (newX != currX || newY != currY) {
                                          mouseGlide(r, currX,currY,newX,newY,10,5);
@@ -1246,6 +1319,10 @@ public final class TestWindowTopComponent extends TopComponent {
  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel calibrationPane;
+    private javax.swing.JPanel calibrationPanel;
+    private javax.swing.JComboBox classCB;
+    private javax.swing.JLabel classLabel;
+    private javax.swing.JPanel classResultsPanel;
     private javax.swing.JComboBox controllerList;
     private javax.swing.JLabel controllersLabel;
     private javax.swing.JPanel editorWindow;
@@ -1254,8 +1331,6 @@ public final class TestWindowTopComponent extends TopComponent {
     private javax.swing.JLabel favoritesLabel;
     private javax.swing.JComboBox favoritesTabCB;
     private javax.swing.JInternalFrame jInternalFrame1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JComboBox leftClickCB;
     private javax.swing.JLabel leftClickLabel;
@@ -1264,6 +1339,7 @@ public final class TestWindowTopComponent extends TopComponent {
     private javax.swing.JLabel reservedWordsLabel;
     private javax.swing.JComboBox runCodeCB;
     private javax.swing.JLabel runCodeLabel;
+    private javax.swing.JPanel runJoystickPanel;
     private javax.swing.JPanel rwPane;
     private javax.swing.JPanel search;
     private javax.swing.JLabel searchLabel;

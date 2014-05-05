@@ -1,6 +1,6 @@
 <record>
-  <date>2014-05-04T20:27:54</date>
-  <millis>1399228074020</millis>
+  <date>2014-05-06T00:07:55</date>
+  <millis>1399327675507</millis>
   <sequence>38</sequence>
   <level>FINEST</level>
   <thread>15</thread>
@@ -10,16 +10,16 @@
   <param>1</param>
 </record>
 <record>
-  <date>2014-05-04T20:27:54</date>
-  <millis>1399228074020</millis>
+  <date>2014-05-06T00:07:55</date>
+  <millis>1399327675507</millis>
   <sequence>39</sequence>
   <level>CONFIG</level>
   <thread>15</thread>
   <message>IDE_STARTUP</message>
 </record>
 <record>
-  <date>2014-05-04T20:27:55</date>
-  <millis>1399228075048</millis>
+  <date>2014-05-06T00:07:56</date>
+  <millis>1399327676326</millis>
   <sequence>49</sequence>
   <logger>org.netbeans.ui.metrics.laf</logger>
   <level>INFO</level>
@@ -29,234 +29,71 @@
   <param>Windows</param>
 </record>
 <record>
-  <date>2014-05-04T20:27:59</date>
-  <millis>1399228079140</millis>
-  <sequence>86</sequence>
+  <date>2014-05-06T00:07:59</date>
+  <millis>1399327679768</millis>
+  <sequence>65</sequence>
   <level>INFO</level>
-  <thread>30</thread>
+  <thread>34</thread>
   <message>MEMORY</message>
   <key>MEMORY</key>
   <catalog>&lt;null&gt;</catalog>
   <param>8442257408</param>
 </record>
 <record>
-  <date>2014-05-04T20:28:14</date>
-  <millis>1399228094476</millis>
-  <sequence>88</sequence>
-  <logger>org.netbeans.ui.focus</logger>
+  <date>2014-05-06T00:08:00</date>
+  <millis>1399327680778</millis>
+  <sequence>67</sequence>
+  <logger>org.netbeans.ui.editor.completion</logger>
   <level>FINE</level>
-  <thread>35</thread>
-  <message>LOG_WINDOW_DEACTIVATED</message>
-  <key>LOG_WINDOW_DEACTIVATED</key>
-  <catalog>org.netbeans.core.ui.warmup.Bundle</catalog>
+  <thread>28</thread>
+  <message>COMPL_INVOCATION</message>
+  <key>COMPL_INVOCATION</key>
+  <catalog>org.netbeans.modules.editor.completion.Bundle</catalog>
+  <param>false</param>
 </record>
 <record>
-  <date>2014-05-04T20:29:52</date>
-  <millis>1399228192336</millis>
-  <sequence>90</sequence>
-  <logger>org.netbeans.ui.focus</logger>
+  <date>2014-05-06T00:08:07</date>
+  <millis>1399327687763</millis>
+  <sequence>69</sequence>
+  <logger>org.netbeans.ui.editor.completion</logger>
   <level>FINE</level>
-  <thread>49</thread>
-  <message>LOG_WINDOW_ACTIVATED</message>
-  <key>LOG_WINDOW_ACTIVATED</key>
-  <catalog>org.netbeans.core.ui.warmup.Bundle</catalog>
-  <param>118</param>
+  <thread>28</thread>
+  <message>COMPL_INVOCATION</message>
+  <key>COMPL_INVOCATION</key>
+  <catalog>org.netbeans.modules.editor.completion.Bundle</catalog>
+  <param>false</param>
 </record>
 <record>
-  <date>2014-05-04T20:30:00</date>
-  <millis>1399228200379</millis>
-  <sequence>91</sequence>
-  <logger>org.netbeans.ui.actions.editor</logger>
-  <level>FINE</level>
-  <thread>35</thread>
-  <message>UI_ACTION_EDITOR</message>
-  <key>UI_ACTION_EDITOR</key>
-  <catalog>&lt;null&gt;</catalog>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228200378,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x386,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228200378,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x386,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>org.netbeans.modules.editor.search.actions.FindPreviousAction[find-previous]</param>
-  <param>FindPreviousAction@967840492 mime="null" name="find-previous"</param>
-  <param>find-previous</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:00</date>
-  <millis>1399228200382</millis>
-  <sequence>92</sequence>
-  <logger>org.netbeans.ui.actions.editor</logger>
-  <level>FINE</level>
-  <thread>35</thread>
-  <message>UI_ACTION_EDITOR</message>
-  <key>UI_ACTION_EDITOR</key>
-  <catalog>&lt;null&gt;</catalog>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228200378,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x386,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228200378,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x386,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>org.netbeans.modules.editor.search.actions.SearchAction[find]</param>
-  <param>SearchAction@1495602456 mime="null" name="find"</param>
-  <param>find</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:00</date>
-  <millis>1399228200452</millis>
-  <sequence>93</sequence>
-  <logger>org.netbeans.ui.metrics.editor</logger>
-  <level>INFO</level>
-  <thread>35</thread>
-  <message>USG_SEARCH_TYPE</message>
-  <param>default</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:01</date>
-  <millis>1399228201667</millis>
-  <sequence>94</sequence>
-  <logger>org.netbeans.ui.actions.editor</logger>
-  <level>FINE</level>
-  <thread>35</thread>
-  <message>UI_ACTION_EDITOR</message>
-  <key>UI_ACTION_EDITOR</key>
-  <catalog>&lt;null&gt;</catalog>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228201666,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228201666,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>org.netbeans.modules.editor.search.actions.FindNextAction[find-next]</param>
-  <param>FindNextAction@1563122164 mime="null" name="find-next"</param>
-  <param>find-next</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:01</date>
-  <millis>1399228201667</millis>
-  <sequence>95</sequence>
-  <logger>org.netbeans.ui.actions.editor</logger>
-  <level>FINE</level>
-  <thread>35</thread>
-  <message>UI_ACTION_EDITOR</message>
-  <key>UI_ACTION_EDITOR</key>
-  <catalog>&lt;null&gt;</catalog>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228201666,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228201666,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>org.netbeans.modules.editor.search.actions.SearchAction[find]</param>
-  <param>SearchAction@1495602456 mime="null" name="find"</param>
-  <param>find</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:04</date>
-  <millis>1399228204756</millis>
-  <sequence>96</sequence>
-  <logger>org.netbeans.ui.actions.editor</logger>
-  <level>FINE</level>
-  <thread>35</thread>
-  <message>UI_ACTION_EDITOR</message>
-  <key>UI_ACTION_EDITOR</key>
-  <catalog>&lt;null&gt;</catalog>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228204754,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=,when=1399228204754,modifiers=Button1] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>org.netbeans.modules.editor.search.actions.ToggleHighlightSearchAction[toggle-highlight-search]</param>
-  <param>ToggleHighlightSearchAction@737335838 mime="null" name="toggle-highlight-search"</param>
-  <param>toggle-highlight-search</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:13</date>
-  <millis>1399228213843</millis>
-  <sequence>98</sequence>
-  <logger>org.netbeans.ui.actions.editor</logger>
-  <level>FINE</level>
-  <thread>35</thread>
-  <message>UI_ACTION_EDITOR</message>
-  <key>UI_ACTION_EDITOR</key>
-  <catalog>&lt;null&gt;</catalog>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=null,when=0,modifiers=] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=null,when=0,modifiers=] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>org.netbeans.modules.editor.macros.MacroDialogSupport$StartMacroRecordingAction[start-macro-recording]</param>
-  <param>org.netbeans.modules.editor.macros.MacroDialogSupport$StartMacroRecordingAction@153c691b</param>
-  <param>start-macro-recording</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:15</date>
-  <millis>1399228215563</millis>
-  <sequence>99</sequence>
-  <logger>org.netbeans.ui.actions.editor</logger>
-  <level>FINE</level>
-  <thread>35</thread>
-  <message>UI_ACTION_EDITOR</message>
-  <key>UI_ACTION_EDITOR</key>
-  <catalog>&lt;null&gt;</catalog>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=null,when=0,modifiers=] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=null,when=0,modifiers=] on javax.swing.JEditorPane[,0,0,878x361,layout=javax.swing.plaf.basic.BasicTextUI$UpdateHandler,alignmentX=0.0,alignmentY=0.0,border=javax.swing.plaf.basic.BasicBorders$MarginBorder@30a25e74,flags=296,maximumSize=,minimumSize=,preferredSize=,caretColor=java.awt.Color[r=0,g=0,b=0],disabledTextColor=javax.swing.plaf.ColorUIResource[r=109,g=109,b=109],editable=true,margin=java.awt.Insets[top=0,left=0,bottom=0,right=0],selectedTextColor=javax.swing.plaf.ColorUIResource[r=255,g=255,b=255],selectionColor=javax.swing.plaf.ColorUIResource[r=51,g=153,b=255],kit=org.netbeans.modules.editor.java.JavaKit@6bea9eae,typeHandlers={text/x-java=org.netbeans.modules.editor.java.JavaKit@6bea9eae}]</param>
-  <param>org.netbeans.modules.editor.macros.MacroDialogSupport$StopMacroRecordingAction[stop-macro-recording]</param>
-  <param>org.netbeans.modules.editor.macros.MacroDialogSupport$StopMacroRecordingAction@3e1190da</param>
-  <param>stop-macro-recording</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:16</date>
-  <millis>1399228216415</millis>
-  <sequence>100</sequence>
+  <date>2014-05-06T00:08:20</date>
+  <millis>1399327700377</millis>
+  <sequence>71</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>53</thread>
+  <thread>14</thread>
   <message>INDEXING_STARTED</message>
   <key>INDEXING_STARTED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
   <param>0</param>
 </record>
 <record>
-  <date>2014-05-04T20:30:18</date>
-  <millis>1399228218407</millis>
-  <sequence>483</sequence>
+  <date>2014-05-06T00:08:20</date>
+  <millis>1399327700382</millis>
+  <sequence>72</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>53</thread>
+  <thread>14</thread>
   <message>INDEXING_FINISHED</message>
   <key>INDEXING_FINISHED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
-  <param>1991</param>
-  <param>angular</param>
-  <param>184</param>
-  <param>7</param>
-  <param>TaskListIndexer</param>
-  <param>3</param>
-  <param>2</param>
-  <param>org.netbeans.modules.java.source.indexing.COSSynchronizingIndexer</param>
-  <param>3</param>
-  <param>0</param>
-  <param>js</param>
-  <param>184</param>
-  <param>396</param>
-  <param>TLIndexer</param>
-  <param>184</param>
-  <param>236</param>
-  <param>org-netbeans-modules-jumpto-file-FileIndexer</param>
-  <param>3</param>
-  <param>8</param>
+  <param>1</param>
 </record>
 <record>
-  <date>2014-05-04T20:30:26</date>
-  <millis>1399228226521</millis>
-  <sequence>484</sequence>
-  <logger>org.netbeans.ui.indexing</logger>
-  <level>INFO</level>
-  <thread>52</thread>
-  <message>INDEXING_STARTED</message>
-  <key>INDEXING_STARTED</key>
-  <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
-  <param>8114</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:26</date>
-  <millis>1399228226528</millis>
-  <sequence>485</sequence>
-  <logger>org.netbeans.ui.indexing</logger>
-  <level>INFO</level>
-  <thread>52</thread>
-  <message>INDEXING_FINISHED</message>
-  <key>INDEXING_FINISHED</key>
-  <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
-  <param>2</param>
-</record>
-<record>
-  <date>2014-05-04T20:30:26</date>
-  <millis>1399228226534</millis>
-  <sequence>489</sequence>
+  <date>2014-05-06T00:08:20</date>
+  <millis>1399327700389</millis>
+  <sequence>76</sequence>
   <logger>org.netbeans.ui.focus</logger>
   <level>FINE</level>
-  <thread>35</thread>
+  <thread>28</thread>
   <message>LOG_WINDOW_DEACTIVATED</message>
   <key>LOG_WINDOW_DEACTIVATED</key>
   <catalog>org.netbeans.core.ui.warmup.Bundle</catalog>
