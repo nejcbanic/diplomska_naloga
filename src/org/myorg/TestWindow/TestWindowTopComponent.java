@@ -49,6 +49,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -227,10 +228,10 @@ public final class TestWindowTopComponent extends TopComponent {
        for (String exp: exceptionList){
             if (exp.contains("Exception") || exp.contains("Error") ){
                 JLabel methodLabel = new JLabel(exp);
-                methodLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                methodLabel.setHorizontalAlignment(SwingConstants.LEFT);
                 methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
                 methodLabel.setForeground(Color.blue); 
-                methodLabel.addMouseListener(mouseListener1);
+                methodLabel.addMouseListener(mouseListenerRW);
                 form.add(methodLabel);
             }
        }
@@ -253,7 +254,7 @@ public final class TestWindowTopComponent extends TopComponent {
             methodLabel.setFont(new Font("Monospaced", Font.PLAIN, 13));
             methodLabel.setForeground(Color.blue);
             form.add(methodLabel);
-            methodLabel.addMouseListener(mouseListener1);
+            methodLabel.addMouseListener(mouseListenerRW);
        }
        return form;
     }
@@ -307,7 +308,7 @@ public final class TestWindowTopComponent extends TopComponent {
        TitledBorder title;
        title = BorderFactory.createTitledBorder("Methods");
        form.setBorder(title); 
-       Method[] methods = newClass.getMethods();       
+       Method[] methods = newClass.getDeclaredMethods();       
        for (Method method:methods)
        {
         if(Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers()) ){
@@ -497,7 +498,13 @@ public final class TestWindowTopComponent extends TopComponent {
             JLabel jc = (JLabel)e.getSource();
             int caretPos = jEditorPane2.getCaretPosition();
              try {
-                 jEditorPane2.getDocument().insertString(caretPos, jc.getText()+" ", null);
+                if ("main".equals(jc.getText())){
+                   jEditorPane2.getDocument().insertString(caretPos, "public static void main (String[]args){\n}", null);
+               }else if("try".equals(jc.getText())){
+                   jEditorPane2.getDocument().insertString(caretPos, "try{\n\n}catch( ){}", null);
+                   jTabbedPane1.setSelectedIndex(3);
+               }else
+                   jEditorPane2.getDocument().insertString(caretPos, jc.getText()+" ", null);
              } catch (BadLocationException ex) {
                  Exceptions.printStackTrace(ex);
              }
@@ -529,19 +536,13 @@ public final class TestWindowTopComponent extends TopComponent {
                  int caretPos = jEditorPane2.getCaretPosition();   
                    
                  try {
-                     if ("main".equals(jc.getText())){
-                         jEditorPane2.getDocument().insertString(caretPos, "public static void main (String[]args){\n}", null);
-                     }else if("try".equals(jc.getText())){
-                         jEditorPane2.getDocument().insertString(caretPos, "try{\n\n}catch( ){}", null);
-                         Rectangle rectangle = jEditorPane2.modelToView( jEditorPane2.getCaretPosition() );
-                         jTabbedPane1.setSelectedIndex(3);
-                     }else{
-                        if (jc.getText().contains("\\.")){
-                            jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
-                        }else{
-                            jEditorPane2.getDocument().insertString(caretPos, jc.getText(), null);
-                        }    
-                     }
+
+                    if (jc.getText().contains("\\.")){
+                        jEditorPane2.getDocument().insertString(caretPos, jc.getText().split("\\.")[jc.getText().split("\\.").length-1], null);
+                    }else{
+                        jEditorPane2.getDocument().insertString(caretPos, jc.getText(), null);
+                    }    
+                     
                  } catch(BadLocationException ex) {
                  }                
             }else if(source instanceof JButton){
@@ -634,7 +635,9 @@ public final class TestWindowTopComponent extends TopComponent {
                 Class newClass;
                 String test = null;
                 ArrayList<String> temp = null;
-                if (!output.equals(".")){
+
+                if (!(output.charAt(0) == '.')){
+                    System.out.println(output);
                     test = output.split("\\.")[0];
                     temp  = classFinal.get(test);
                 }
@@ -665,7 +668,7 @@ public final class TestWindowTopComponent extends TopComponent {
                             classResultsPanel.add(returnPanelFields(newClass));
                             jTabbedPane1.setSelectedIndex(4);
                         }
-                        if (newClass.getMethods().length !=0){
+                        if (newClass.getDeclaredMethods().length !=0){
                             classResultsPanel.add(returnPanelMethods(newClass));
                             jTabbedPane1.setSelectedIndex(4);
                         }
@@ -687,7 +690,7 @@ public final class TestWindowTopComponent extends TopComponent {
                             classResultsPanel.add(returnPanelFields(Class.forName(className, true, classLoader)));
                             jTabbedPane1.setSelectedIndex(4);
                         }
-                        if (Class.forName(className, true, classLoader).getMethods().length !=0){
+                        if (Class.forName(className, true, classLoader).getDeclaredMethods().length !=0){
                             classResultsPanel.add(returnPanelMethods(Class.forName(className, true, classLoader)));
                             jTabbedPane1.setSelectedIndex(4);
                         }
@@ -907,7 +910,7 @@ public final class TestWindowTopComponent extends TopComponent {
                 classResultsPanel.repaint();
                 if (Class.forName(jc.getText()).getFields().length !=0)
                     classResultsPanel.add(returnPanelFields(Class.forName(jc.getText())));
-                if (Class.forName(jc.getText()).getMethods().length !=0)
+                if (Class.forName(jc.getText()).getDeclaredMethods().length !=0)
                     classResultsPanel.add(returnPanelMethods(Class.forName(jc.getText())));
                 jTabbedPane1.setSelectedIndex(4);
             } catch (BadLocationException | ClassNotFoundException ex) {
@@ -945,7 +948,7 @@ public final class TestWindowTopComponent extends TopComponent {
         boolean exist = true;
         try 
         {
-            if(Modifier.isPublic(Class.forName(className).getModifiers()) && Class.forName(className).getMethods().length > 0){
+            if(Modifier.isPublic(Class.forName(className).getModifiers()) && Class.forName(className).getDeclaredMethods().length > 0){
                 exist = true;
             }
         } 
