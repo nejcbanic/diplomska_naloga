@@ -1,6 +1,15 @@
 <record>
-  <date>2014-05-06T00:07:55</date>
-  <millis>1399327675507</millis>
+  <date>2014-05-06T20:33:30</date>
+  <millis>1399401210771</millis>
+  <sequence>37</sequence>
+  <level>FINEST</level>
+  <thread>15</thread>
+  <message>CPU INFO</message>
+  <param>4</param>
+</record>
+<record>
+  <date>2014-05-06T20:33:30</date>
+  <millis>1399401210773</millis>
   <sequence>38</sequence>
   <level>FINEST</level>
   <thread>15</thread>
@@ -10,16 +19,16 @@
   <param>1</param>
 </record>
 <record>
-  <date>2014-05-06T00:07:55</date>
-  <millis>1399327675507</millis>
+  <date>2014-05-06T20:33:30</date>
+  <millis>1399401210773</millis>
   <sequence>39</sequence>
   <level>CONFIG</level>
   <thread>15</thread>
   <message>IDE_STARTUP</message>
 </record>
 <record>
-  <date>2014-05-06T00:07:56</date>
-  <millis>1399327676326</millis>
+  <date>2014-05-06T20:33:31</date>
+  <millis>1399401211687</millis>
   <sequence>49</sequence>
   <logger>org.netbeans.ui.metrics.laf</logger>
   <level>INFO</level>
@@ -29,71 +38,47 @@
   <param>Windows</param>
 </record>
 <record>
-  <date>2014-05-06T00:07:59</date>
-  <millis>1399327679768</millis>
-  <sequence>65</sequence>
+  <date>2014-05-06T20:33:35</date>
+  <millis>1399401215442</millis>
+  <sequence>59</sequence>
   <level>INFO</level>
-  <thread>34</thread>
+  <thread>32</thread>
   <message>MEMORY</message>
   <key>MEMORY</key>
   <catalog>&lt;null&gt;</catalog>
   <param>8442257408</param>
 </record>
 <record>
-  <date>2014-05-06T00:08:00</date>
-  <millis>1399327680778</millis>
-  <sequence>67</sequence>
-  <logger>org.netbeans.ui.editor.completion</logger>
-  <level>FINE</level>
-  <thread>28</thread>
-  <message>COMPL_INVOCATION</message>
-  <key>COMPL_INVOCATION</key>
-  <catalog>org.netbeans.modules.editor.completion.Bundle</catalog>
-  <param>false</param>
-</record>
-<record>
-  <date>2014-05-06T00:08:07</date>
-  <millis>1399327687763</millis>
-  <sequence>69</sequence>
-  <logger>org.netbeans.ui.editor.completion</logger>
-  <level>FINE</level>
-  <thread>28</thread>
-  <message>COMPL_INVOCATION</message>
-  <key>COMPL_INVOCATION</key>
-  <catalog>org.netbeans.modules.editor.completion.Bundle</catalog>
-  <param>false</param>
-</record>
-<record>
-  <date>2014-05-06T00:08:20</date>
-  <millis>1399327700377</millis>
-  <sequence>71</sequence>
+  <date>2014-05-06T20:34:06</date>
+  <millis>1399401246377</millis>
+  <sequence>62</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>14</thread>
+  <thread>32</thread>
   <message>INDEXING_STARTED</message>
   <key>INDEXING_STARTED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
   <param>0</param>
 </record>
 <record>
-  <date>2014-05-06T00:08:20</date>
-  <millis>1399327700382</millis>
-  <sequence>72</sequence>
+  <date>2014-05-06T20:34:06</date>
+  <millis>1399401246383</millis>
+  <sequence>63</sequence>
   <logger>org.netbeans.ui.indexing</logger>
   <level>INFO</level>
-  <thread>14</thread>
+  <thread>32</thread>
   <message>INDEXING_FINISHED</message>
   <key>INDEXING_FINISHED</key>
   <catalog>org.netbeans.modules.parsing.impl.indexing.Bundle</catalog>
   <param>1</param>
 </record>
 <record>
-  <date>2014-05-06T00:08:20</date>
-  <millis>1399327700389</millis>
-  <sequence>76</sequence>
+  <date>2014-05-06T20:34:06</date>
+  <millis>1399401246389</millis>
+  <sequence>67</sequence>
   <logger>org.netbeans.ui.focus</logger>
   <level>FINE</level>
-  <thread>28</thread>
+  <thread>21</thread>
   <message>LOG_WINDOW_DEACTIVATED</message>
   <key>LOG_WINDOW_DEACTIVATED</key>
   <catalog>org.netbeans.core.ui.warmup.Bundle</catalog>

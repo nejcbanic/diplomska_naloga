@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
->Log Session: Tuesday, May 6, 2014 12:07:51 AM CEST
+>Log Session: Tuesday, May 6, 2014 8:33:26 PM CEST
 >System Info: 
   Product Version         = NetBeans IDE 8.0 (Build 201403101706) (#b8e35b888b3f)
   Operating System        = Windows 7 version 6.1 running on amd64
@@ -492,7 +492,7 @@ INFO [org.netbeans.core.startup.NbEvents]: Turning on modules:
 	org.netbeans.core.nativeaccess/1 [1.26.1 201403101706]
 	org.netbeans.core.io.ui/1 [1.25.1 201403101706]
 	org.netbeans.core.browser.webview/1 [1.10.1.1.1 1 201403101706]
-	org.myorg.TestWindow [1.0 140505]
+	org.myorg.TestWindow [1.0 140506]
 	org.eclipse.mylyn.commons.xmlrpc [3.10.0 3.10.0.20130704-2116]
 	org.eclipse.mylyn.commons.repositories.core [1.2.0 1.2.0.20130704-2116]
 	org.eclipse.mylyn.commons.core [3.10.0 3.10.0.20130926-1710]
@@ -508,13 +508,20 @@ INFO [org.netbeans.core.startup.NbEvents]: Turning on modules:
 	org.apache.commons.lang [2.4.0 2.4.0]
 	javaewah.dummy [0.5.6 0.5.6]
 	com.jcraft.jzlib [1.0.7 1.0.7]
-INFO [org.netbeans.core.netigso.Netigso]: bundle org.eclipse.mylyn.wikitext.textile.core@1.9.0.20131007-2055 resolved
 INFO [org.netbeans.core.netigso.Netigso]: bundle org.eclipse.mylyn.wikitext.confluence.core@1.9.0.20131007-2055 resolved
+INFO [org.netbeans.core.netigso.Netigso]: bundle org.eclipse.mylyn.wikitext.textile.core@1.9.0.20131007-2055 resolved
 INFO [org.netbeans.core.netigso.Netigso]: bundle org.eclipse.osgi@3.8.0.v20120529-1548 started
 INFO [org.netbeans.core.network.proxy.NetworkProxyReloader]: System network proxy resolver: Windows
 INFO [org.netbeans.core.network.proxy.NetworkProxyReloader]: System network proxy reloading succeeded.
 INFO [org.netbeans.core.network.proxy.NetworkProxyReloader]: System network proxy - mode: direct
 INFO [org.netbeans.core.network.proxy.NetworkProxyReloader]: System network proxy: fell to default (correct if direct mode went before)
+WARNING [org.netbeans.core.startup.InstalledFileLocatorImpl]: no code name base passed when looking up modules/dict/ispell-enwl-3.1.20.zip at org.netbeans.core.startup.layers.NbinstURLMapper.decodeURL(NbinstURLMapper.java:121)
+WARNING [org.netbeans.core.startup.InstalledFileLocatorImpl]: no code name base passed when looking up modules/dict/ispell-enwl-3.1.20.zip at org.netbeans.core.startup.layers.NbinstURLMapper.decodeURL(NbinstURLMapper.java:121)
+WARNING [org.netbeans.core.startup.InstalledFileLocatorImpl]: no code name base passed when looking up modules/dict/ispell-enwl-3.1.20.zip at org.netbeans.core.startup.layers.NbinstURLMapper.decodeURL(NbinstURLMapper.java:121)
+WARNING [org.netbeans.core.startup.InstalledFileLocatorImpl]: no code name base passed when looking up modules/dict/ispell-enwl-3.1.20.zip at org.netbeans.core.startup.layers.NbinstURLMapper.decodeURL(NbinstURLMapper.java:121)
+WARNING [org.netbeans.core.startup.InstalledFileLocatorImpl]: no code name base passed when looking up modules/dict/ispell-enwl-3.1.20.zip at org.netbeans.core.startup.layers.NbinstURLMapper.decodeURL(NbinstURLMapper.java:121)
+WARNING [org.netbeans.core.startup.InstalledFileLocatorImpl]: no code name base passed when looking up modules/dict/ispell-enwl-3.1.20.zip at org.netbeans.core.startup.layers.NbinstURLMapper.decodeURL(NbinstURLMapper.java:121)
+WARNING [org.netbeans.core.startup.InstalledFileLocatorImpl]: no code name base passed when looking up modules/dict/ispell-enwl-3.1.20.zip at org.netbeans.core.startup.layers.NbinstURLMapper.decodeURL(NbinstURLMapper.java:121)
 Diagnostic information
 Input arguments:
 	-Dnetbeans.importclass=org.netbeans.upgrade.AutoUpgrade
@@ -533,7 +540,6 @@ Input arguments:
 	-Dnetbeans.logger.console=true
 	-ea
 	-Djdk.home=C:\Program Files\Java\jdk1.8.0_05
-	-splash:C:\Users\Nejc\Desktop\diploma\module3\build\testuserdir\var\cache\splash.png
 	-Dnetbeans.home=C:\Program Files\NetBeans 8.0\platform
 	-Dnetbeans.user=C:\Users\Nejc\Desktop\diploma\module3\build\testuserdir
 	-Dnetbeans.default_userdir_root=C:\Users\Nejc\AppData\Roaming\NetBeans
@@ -545,12 +551,11 @@ Input arguments:
 Compiler: HotSpot 64-Bit Tiered Compilers
 Heap memory usage: initial 32,0MB maximum 910,5MB
 Non heap memory usage: initial 2,4MB maximum -1b
-Garbage collector: PS Scavenge (Collections=27 Total time spent=0s)
-Garbage collector: PS MarkSweep (Collections=3 Total time spent=0s)
-Classes: loaded=7856 total loaded=7856 unloaded 0
+Garbage collector: PS Scavenge (Collections=29 Total time spent=0s)
+Garbage collector: PS MarkSweep (Collections=5 Total time spent=0s)
+Classes: loaded=8137 total loaded=8137 unloaded 0
 INFO [org.netbeans.core.ui.warmup.DiagnosticTask]: Total memory 8.442.257.408
 WARNING [org.openide.filesystems.Ordering]: Not all children in Menu/Window/ marked with the position attribute: [org-myorg-TestWindow-TestWindowTopComponent.shadow], but some are: [org-netbeans-modules-project-ui-logical-tab-action.shadow, org-netbeans-modules-project-ui-physical-tab-action.shadow, org-netbeans-modules-favorites-View.shadow, org-netbeans-core-ide-ServicesTabAction.shadow, org-netbeans-modules-navigator-ShowNavigatorAction.shadow, org-netbeans-modules-tasklist-ui-TaskListAction.shadow, org-netbeans-modules-tasks-ui-DashboardTopComponent.shadow, org-netbeans-core-io-ui-IOWindowAction.shadow, SwitchToRecentDocumentAction.shadow, Debug, Profile, Web, Tools, Separator3.instance, ConfigureWindow, org-netbeans-core-windows-actions-ResetWindowsAction.shadow, Separator4.instance, CloseWindowAction.shadow, CloseAllDocumentsAction.shadow, CloseAllButThisAction.shadow, GroupsMenuAction.shadow, DocumentsAction.shadow]
-INFO [org.netbeans.modules.parsing.impl.SourceCache]: Parser factory: org.netbeans.modules.java.source.parsing.JavacParserFactory@5c952eb2 returned null parser for Snapshot 132320885: MimePath[text/x-java] org.netbeans.modules.editor.NbEditorDocument@e0b8389, mimeType='text/x-java', kitClass=null, length=114, version=11, file=null
 WARNING [org.netbeans.TopSecurityManager]: use of system property netbeans.home has been obsoleted in favor of InstalledFileLocator/Places at org.netbeans.Clusters.relativeDirsWithHome(Clusters.java:137)
 INFO [org.netbeans.core.netigso.Netigso]: bundle org.eclipse.osgi@3.8.0.v20120529-1548 256
 INFO [org.netbeans.core.netigso.Netigso]: bundle org.eclipse.osgi@3.8.0.v20120529-1548 stopped
